@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход через Steam</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 50px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .logo img {
+            width: 100px;
+            height: 100px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .steam-login-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1b2838 0%, #171a21 100%);
+            color: white;
+            text-decoration: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: 0 10px 30px rgba(27, 40, 56, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .steam-login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(27, 40, 56, 0.4);
+            background: linear-gradient(135deg, #2a475e 0%, #1b2838 100%);
+        }
+
+        .steam-login-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .steam-icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 15px;
+            background: white;
+            border-radius: 50%;
+            padding: 5px;
+        }
+
+        .features {
+            margin-top: 40px;
+            text-align: left;
+        }
+
+        .features h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .features ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .features li {
+            color: #555;
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .features li:before {
+            content: "✓";
+            color: #4CAF50;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c62828;
+        }
+
+        .info-message {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #1565c0;
+        }
+
+        @media (max-width: 600px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .steam-login-btn {
+                padding: 15px 30px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <svg width="100" height="100" viewBox="0 0 24 24" fill="#171a21">
+                <path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.074 0 .147.004.22.007l2.86-4.406V8.91c0-1.441 1.126-2.61 2.515-2.61 1.389 0 2.515 1.169 2.515 2.61 0 1.441-1.126 2.61-2.515 2.61-.271 0-.531-.041-.776-.115l-4.447 2.561c.004.082.011.164.011.249 0 1.455-1.138 2.634-2.543 2.634-1.405 0-2.543-1.179-2.543-2.634 0-1.455 1.138-2.634 2.543-2.634.084 0 .168.004.25.011l2.697-4.192c-.091-.301-.148-.618-.148-.949 0-1.441 1.126-2.61 2.515-2.61 1.389 0 2.515 1.169 2.515 2.61 0 1.441-1.126 2.61-2.515 2.61-.096 0-.189-.004-.282-.011l-2.691 4.188c.146.358.229.75.229 1.161 0 1.456-1.138 2.634-2.543 2.634-1.406 0-2.543-1.178-2.543-2.634 0-1.455 1.137-2.634 2.543-2.634.084 0 .168.004.25.011l2.697-4.192c-.091-.301-.148-.618-.148-.949 0-1.441 1.126-2.61 2.515-2.61 1.389 0 2.515 1.169 2.515 2.61 0 1.441-1.126 2.61-2.515 2.61z"/>
+            </svg>
+        </div>
+
+        <h1>Войдите через Steam</h1>
+        <p class="subtitle">Используйте свой Steam аккаунт для быстрой и безопасной авторизации</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-message{% else %}info-message{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <a href="{% url 'steam_auth:login' %}" class="steam-login-btn">
+            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/steam.svg"
+                 alt="Steam"
+                 class="steam-icon">
+            Войти через Steam
+        </a>
+
+        <div class="features">
+            <h3>Преимущества входа через Steam:</h3>
+            <ul>
+                <li>Безопасность ваших данных</li>
+                <li>Мгновенная регистрация</li>
+                <li>Доступ к аватару и никнейму</li>
+                <li>Не нужно запоминать пароль</li>
+            </ul>
+        </div>
+
+        {% if not user.is_authenticated %}
+            <div class="info-message">
+                <strong>Внимание:</strong> После нажатия кнопки вы будете перенаправлены на страницу авторизации Steam.
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const steamBtn = document.querySelector('.steam-login-btn');
+            if (steamBtn) {
+                steamBtn.addEventListener('click', function(e) {
+                    // Можно добавить анимацию загрузки
+                    this.innerHTML = '<span>Перенаправление на Steam...</span>';
+
+                    // Можно добавить таймер для отображения процесса
+                    setTimeout(() => {
+                        this.innerHTML = '<span>Пожалуйста, подождите...</span>';
+                    }, 1000);
+                });
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('error')) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.innerHTML = '<strong>Ошибка:</strong> ' + urlParams.get('error');
+                document.querySelector('.login-container').prepend(errorDiv);
+            }
+        });
+    </script>
+</body>
+</html>

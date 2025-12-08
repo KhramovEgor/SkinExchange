@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,6 +30,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+# Добавьте в INSTALLED_APPS
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,7 +38,27 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'steam_auth',  # Ваше новое приложение
 ]
+
+# Настройки аутентификации
+AUTHENTICATION_BACKENDS = [
+    'steam_auth.backends.SteamBackend',  # Steam бэкенд
+    'django.contrib.auth.backends.ModelBackend',  # Стандартный бэкенд
+]
+
+# Steam API Key (получите на https://steamcommunity.com/dev/apikey)
+STEAM_API_KEY = os.getenv('STEAM_API_KEY', '')
+
+# URL для перенаправления
+LOGIN_REDIRECT_URL = 'steam_auth:profile'
+LOGOUT_REDIRECT_URL = 'home'
+
+# Настройки сессии
+SESSION_COOKIE_SECURE = False  # True для production с HTTPS
+SESSION_COOKIE_HTTPONLY = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 1209600  # 2 недели в секундах
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
