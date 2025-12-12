@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ваш профиль</title>
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .avatar-large {
+            width: 184px;
+            height: 184px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .user-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .user-info {
+            flex: 1;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #1b2838;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background: #2a475e;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <h1>Ваш профиль</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background-color: {% if message.tags == 'error' %}#ffebee{% else %}#e3f2fd{% endif %};
+                           color: {% if message.tags == 'error' %}#c62828{% else %}#1565c0{% endif %};
+                           padding: 15px;
+                           border-radius: 5px;
+                           margin-bottom: 20px;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="user-card">
+            {% if steam_data.avatar_full %}
+                <img src="{{ steam_data.avatar_full }}" alt="Аватар" class="avatar-large">
+            {% endif %}
+
+            <div class="user-info">
+                <h2>{{ steam_data.persona_name|default:user.username }}</h2>
+
+                <p><strong>Steam ID:</strong> {{ steam_data.steam_id }}</p>
+
+                {% if steam_data.real_name %}
+                    <p><strong>Реальное имя:</strong> {{ steam_data.real_name }}</p>
+                {% endif %}
+
+                {% if steam_data.profile_url %}
+                    <p>
+                        <strong>Профиль Steam:</strong>
+                        <a href="{{ steam_data.profile_url }}" target="_blank">
+                            {{ steam_data.profile_url }}
+                        </a>
+                    </p>
+                {% endif %}
+
+                {% if steam_data.country_code %}
+                    <p><strong>Страна:</strong> {{ steam_data.country_code }}</p>
+                {% endif %}
+
+                <p><strong>Имя пользователя:</strong> {{ user.username }}</p>
+                <p><strong>Email:</strong> {{ user.email|default:"Не указан" }}</p>
+                <p><strong>Дата регистрации:</strong> {{ user.date_joined|date:"d.m.Y H:i" }}</p>
+            </div>
+        </div>
+
+        <div>
+            <a href="{% url 'steam_auth:home' %}" class="btn">На главную</a>
+            <a href="{% url 'steam_auth:logout' %}" class="btn">Выйти</a>
+        </div>
+    </div>
+</body>
+</html>
