@@ -31,14 +31,39 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-        # Наши приложения (ВАЖЕН ПОРЯДОК!)
+    
+    # Наши приложения (ВАЖЕН ПОРЯДОК!)
     'core',
     'auth_app',
     'catalog',
     'inventory',
-    'parser',  # добавить
+    'parser',
+    
+    # Из напарника - Steam аутентификация
+    'steam_auth',
 ]
+
 AUTH_USER_MODEL = 'core.User'
+
+# === НАСТРОЙКИ ИЗ НАПАРНИКА (Steam Auth) ===
+AUTHENTICATION_BACKENDS = [
+    'steam_auth.backends.SteamBackend',  # Steam бэкенд
+    'django.contrib.auth.backends.ModelBackend',  # Стандартный бэкенд
+]
+
+# Steam API Key (получите на https://steamcommunity.com/dev/apikey)
+STEAM_API_KEY = os.getenv('STEAM_API_KEY', '')
+
+# URL для перенаправления
+LOGIN_REDIRECT_URL = 'steam_auth:profile'
+LOGOUT_REDIRECT_URL = 'home'
+
+# Настройки сессии
+SESSION_COOKIE_SECURE = False  # True для production с HTTPS
+SESSION_COOKIE_HTTPONLY = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 1209600  # 2 недели в секундах
+# ==========================================
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -104,12 +129,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'ru-ru'  # Изменено с 'en-us' (из напарника)
+TIME_ZONE = 'Europe/Moscow'  # Изменено с 'UTC' (из напарника)
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -122,4 +144,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'core.User'
+# AUTH_USER_MODEL = 'core.User'  # УДАЛИТЬ эту строку (дублируется выше)

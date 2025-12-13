@@ -10,7 +10,6 @@ media/
 
 # Virtual Environment
 venv/
-.venv/
 .env
 .env.local
 .env.*.local
@@ -83,3 +82,5 @@ venv.bak/
 
 # Static files collected
 /staticfiles/
+
+!.venv/
