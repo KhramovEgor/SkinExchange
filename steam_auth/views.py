@@ -9,12 +9,78 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+# views.py в steam_auth
+from django.shortcuts import render
+import requests
+from django.conf import settings
+
 
 def home_view(request):
+    """Главная страница сайта"""
+
+    # Здесь должен быть код для получения данных из вашего API или БД
+    # Пример с фиксированными данными:
+    items_data = [
+        {
+            "name": "Gamma Case",
+            "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bj35VTqVBP4io_frHEVtvP5bPZrd6XECmOSxe0v4bRoTnnjwBkitWrRm4yoeX3GagMnCZZ2FPlK7EcEv22BnQ/62fx62f",
+            "url": "https://steamcommunity.com/market/listings/730/Gamma%20Case",
+            "current_price": "477,09 руб."
+        },
+        {
+            "name": "Danger Zone Case",
+            "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bj35VTqVBP4io_fr3MVv_H4a6FucPPBWjDIkbdz4rg4Syyyxxsi5mzRntuvJCqVbwAgDZBwRPlK7EcZJ5GkQA/62fx62f",
+            "url": "https://steamcommunity.com/market/listings/730/Danger%20Zone%20Case",
+            "current_price": "134,70 руб."
+        }
+    ]
+
+    # В реальном проекте можно получать данные из внешнего API:
+    # items_data = get_items_from_api()
+
+    # Получаем данные из сессии, если пользователь авторизован
+    steam_data = request.session.get('steam_data', {})
+
+    # Рассчитываем статистику на основе данных
+    total_items = len(items_data)
+    if items_data:
+        # Можно добавить расчет средней цены и т.д.
+        pass
+
     context = {
         'user': request.user,
+        'items_data': items_data,  # Передаем данные в шаблон
+        'steam_data': steam_data,
+        'page_title': 'CS Market Analytics - Главная',
+        'market_stats': {
+            'daily_volume': '$1.2M',
+            'price_change': '+2.34%',
+            'active_deals': '12,847',
+            'avg_price': '$4.67',
+            'total_items': total_items
+        }
     }
+
     return render(request, 'steam_auth/home.html', context)
+
+
+# Пример функции для получения данных из API (если нужно)
+def get_items_from_api():
+    """
+    Пример функции для получения данных из внешнего API
+    В реальном проекте замените на ваш источник данных
+    """
+    try:
+        # Пример запроса к вашему API
+        # response = requests.get('https://ваш-api.com/items', timeout=10)
+        # if response.status_code == 200:
+        #     return response.json()
+        # else:
+        #     return []
+        return []  # Временно возвращаем пустой список
+    except Exception as e:
+        print(f"Ошибка при получении данных: {e}")
+        return []
 
 
 def steam_login(request):
@@ -112,8 +178,20 @@ def steam_callback(request):
 
             login(request, user, backend='steam_auth.backends.SteamBackend')
 
-            request.session['steam_data'] = steam_data
-            request.session['steam_id'] = steam_id
+            request.session['steam_data'] = {
+                'steam_id': steam_id,
+                'persona_name': steam_data.get('persona_name', ''),
+                'profile_url': steam_data.get('profile_url', ''),
+                'avatar': steam_data.get('avatar', ''),
+                'avatar_medium': steam_data.get('avatar_medium', ''),
+                'avatar_full': steam_data.get('avatar_full', ''),
+                'real_name': steam_data.get('real_name', ''),
+                'country_code': steam_data.get('country_code', ''),
+                'profile_state': steam_data.get('profile_state', 0),
+                'community_visibility': steam_data.get('community_visibility', 0),
+                'time_created': steam_data.get('time_created'),
+                'last_logoff': steam_data.get('last_logoff'),
+            }
 
             messages.success(request, f"Успешный вход! Добро пожаловать!")
 
@@ -126,7 +204,7 @@ def steam_callback(request):
         print(f"[ERROR] Ошибка в callback: {str(e)}")
         messages.error(request, f"Ошибка авторизации: {str(e)}")
 
-    return redirect('home')
+    return redirect('/')
 
 
 def validate_openid_response(request):

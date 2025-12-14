@@ -24,10 +24,7 @@ from steam_auth import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('auth/', include('steam_auth.urls')),  # Подключаем steam_auth
-    path('login/', views.steam_login, name='login'),
-    path('callback/', views.steam_callback, name='callback'),
-    path('logout/', views.logout_view, name='logout'),
-    path('profile/', views.profile_view, name='profile'),
+    path('', include('steam_auth.urls')),
     path('', views.home_view, name='home'),
+    path('profile/', views.profile_view, name='profile'),
 ]
