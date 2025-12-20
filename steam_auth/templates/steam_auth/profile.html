@@ -670,17 +670,17 @@
             </aside>
         </div>
 
-        <!-- Инвентарь -->
+                <!-- Инвентарь -->
         <section class="inventory-section">
             <h3 class="section-title">🎮 Инвентарь Steam</h3>
 
             <div class="game-tabs" id="gameTabs">
-                <!-- Вкладки будут заполнены через JavaScript -->
                 <div class="game-tab active" data-game="all">Все игры</div>
                 <div class="game-tab" data-game="730">CS:GO / CS2</div>
                 <div class="game-tab" data-game="570">Dota 2</div>
                 <div class="game-tab" data-game="440">Team Fortress 2</div>
                 <div class="game-tab" data-game="252490">Rust</div>
+                <div class="game-tab" data-game="753">Steam</div>
             </div>
 
             <div class="items-grid" id="inventoryItems">
@@ -710,100 +710,84 @@
     </div>
 
     <script>
-        // Данные для демонстрации (в реальном проекте будут с сервера)
-        const demoInventory = {
-            "730": [
-                {
-                    "name": "AK-47 | Redline",
-                    "image": "https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV09-5lpKKmPLLPrfVn35c18l4jeDG8I2n2Qa1qUI5Y2jwLIWRd1U3ZVmE_1a5wOi7h5S8vJ_Oy3tn6ykm43HdwSfVPg",
-                    "game": "CS2",
-                    "market_url": "https://steamcommunity.com/market/listings/730/AK-47%20%7C%20Redline%20%28Field-Tested%29"
-                },
-                {
-                    "name": "AWP | Dragon Lore",
-                    "image": "https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAZt7P7NdD5H_9WkQr-ZkvP8J4Tdn2pZ5MB1teXI5oKkjg3t-kc9Zm2mIdWSdAM2Zl7XrwG4w-7qjZO-7s7JzSYy7yYh5yvYmBO3gw",
-                    "game": "CS2",
-                    "market_url": "https://steamcommunity.com/market/listings/730/AWP%20%7C%20Dragon%20Lore%20%28Factory%20New%29"
-                },
-                {
-                    "name": "Gamma Case",
-                    "image": "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bj35VTqVBP4io_frHEVtvP5bPZrd6XECmOSxe0v4bRoTnnjwBkitWrRm4yoeX3GagMnCZZ2FPlK7EcEv22BnQ/62fx62f",
-                    "game": "CS2",
-                    "market_url": "https://steamcommunity.com/market/listings/730/Gamma%20Case"
+        // Токен CSRF для Django
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
                 }
-            ],
-            "570": [
-                {
-                    "name": "Dragonclaw Hook",
-                    "image": "https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpou-6kejhzw8zFcDoV09-5gZKIgvLLPrfVn35c18l4jeDG8I2n2Qa2_EA_YmHxIICXIFJqM1yE_QK8wOq-h8O-vJ6bynUwviRz5n3dnxb30h5Jb74r0-XNPcufjgYMMbVgZg/62fx62f",
-                    "game": "Dota 2",
-                    "market_url": "https://steamcommunity.com/market/listings/570/Dragonclaw%20Hook"
-                }
-            ],
-            "440": [
-                {
-                    "name": "Burning Flames Team Captain",
-                    "image": "https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpopujwezhoysz3YCRG09K5h5W0m_7zO6_ummpD7cp33OiQpY6g3w3j_EtvNWClJYeTdgM8Mw7Q-AW5wO68hMO_vM6bwXpnuXMn4XzYykfiaE4XUw/62fx62f",
-                    "game": "Team Fortress 2",
-                    "market_url": "https://steamcommunity.com/market/listings/440/Burning%20Flames%20Team%20Captain"
-                }
-            ]
-        };
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
 
         // Функция для отображения инвентаря
-        function renderInventory(gameId = 'all') {
+        function renderInventory(items) {
             const container = document.getElementById('inventoryItems');
-            const loadingIndicator = document.getElementById('loadingIndicator');
-
-            // Скрываем индикатор загрузки
-            if (loadingIndicator) {
-                loadingIndicator.style.display = 'none';
-            }
 
             // Очищаем контейнер
             container.innerHTML = '';
 
-            // Получаем предметы для выбранной игры
-            let items = [];
-            if (gameId === 'all') {
-                // Собираем все предметы из всех игр
-                Object.values(demoInventory).forEach(gameItems => {
-                    items = items.concat(gameItems);
-                });
-            } else if (demoInventory[gameId]) {
-                items = demoInventory[gameId];
-            }
-
             // Отображаем предметы или сообщение об пустом инвентаре
-            if (items.length > 0) {
+            if (items && items.length > 0) {
                 items.forEach(item => {
                     const itemCard = document.createElement('div');
                     itemCard.className = 'inventory-item-card';
 
+                    // Формируем URL для Steam маркета
+                    const marketUrl = `https://steamcommunity.com/market/listings/${item.appid}/${encodeURIComponent(item.market_hash_name)}`;
+
                     itemCard.innerHTML = `
                         <div class="item-header">
-                            <img src="${item.image}"
-                                 alt="${item.name}"
+                            <img src="${item.icon_url || item.icon_url_large || 'https://via.placeholder.com/64x64/2a2f3d/8a94a6?text=?'}"
+                                 alt="${item.name || item.market_hash_name}"
                                  class="item-image"
                                  onerror="this.src='https://via.placeholder.com/64x64/2a2f3d/8a94a6?text=?'">
                             <div>
-                                <h4 class="item-name">${item.name}</h4>
-                                <div class="item-game">${item.game}</div>
+                                <h4 class="item-name" title="${item.name || item.market_hash_name}">
+                                    ${item.name || item.market_hash_name}
+                                </h4>
+                                <div class="item-game">
+                                    ${getGameName(item.appid)} • ${item.amount || 1} шт.
+                                </div>
+                                ${item.tradable !== undefined ? `
+                                    <div class="item-game" style="font-size: 11px; margin-top: 2px;">
+                                        ${item.tradable ? '🟢 Можно обменять' : '🔴 Нельзя обменять'}
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                         <div class="item-actions">
-                            <a href="${item.market_url}"
+                            <a href="${marketUrl}"
                                target="_blank"
-                               class="btn-small btn-view">
-                                Просмотр
+                               class="btn-small btn-view"
+                               title="Посмотреть на Steam Market">
+                                📈 Маркет
                             </a>
-                            <a href="#" class="btn-small btn-sell">
-                                Продать
-                            </a>
+                            <button class="btn-small btn-sell analyze-btn"
+                                    data-item='${JSON.stringify(item)}'
+                                    title="Проанализировать стоимость">
+                                📊 Анализ
+                            </button>
                         </div>
                     `;
 
                     container.appendChild(itemCard);
+                });
+
+                // Добавляем обработчики для кнопок анализа
+                document.querySelectorAll('.analyze-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const itemData = JSON.parse(this.getAttribute('data-item'));
+                        analyzeItem(itemData);
+                    });
                 });
             } else {
                 container.innerHTML = `
@@ -816,70 +800,194 @@
             }
         }
 
+        // Функция для получения названия игры по appid
+        function getGameName(appid) {
+            const games = {
+                '730': 'CS2',
+                '570': 'Dota 2',
+                '440': 'TF2',
+                '252490': 'Rust',
+                '753': 'Steam',
+                '578080': 'PUBG',
+                '730': 'CS:GO',
+                '730': 'Counter-Strike 2'
+            };
+            return games[appid] || `Игра ${appid}`;
+        }
+
+        // Функция для анализа предмета
+        function analyzeItem(item) {
+            alert(`Анализ предмета:\n\nНазвание: ${item.name || item.market_hash_name}\nИгра: ${getGameName(item.appid)}\n\nФункция анализа цены будет добавлена позже.`);
+        }
+
         // Функция для получения реального инвентаря Steam API
-        async function loadSteamInventory() {
+        async function loadSteamInventory(gameId = 'all') {
             try {
-                // В реальном проекте здесь будет запрос к вашему бэкенду
-                // который получит инвентарь через Steam API
-                console.log('Загрузка инвентаря Steam...');
+                console.log(`🎮 ЗАПРОС ИНВЕНТАРЯ STEAM (JSON API)`);
+                console.log(`   Время: ${new Date().toLocaleString()}`);
+                console.log(`   Steam ID: {{ steam_data.steam_id }}`);
+                console.log(`   Игра: ${gameId === 'all' ? 'Все игры' : `AppID: ${gameId}`}`);
 
-                // Для демонстрации используем данные из demoInventory
-                // В реальном проекте:
-                // const response = await fetch('/api/steam-inventory/');
-                // const data = await response.json();
+                const loadingIndicator = document.getElementById('loadingIndicator');
+                if (loadingIndicator) {
+                    loadingIndicator.innerHTML = `
+                        <div class="loading-spinner"></div>
+                        <p>Загрузка инвентаря из Steam...</p>
+                        <p style="font-size: 12px; margin-top: 10px; color: #8a94a6;">
+                            Используем Steam JSON API...
+                        </p>
+                    `;
+                }
 
-                // Имитация загрузки
-                setTimeout(() => {
-                    renderInventory('all');
-                }, 1000);
+                // Формируем URL запроса
+                const apiUrl = `/auth/api/inventory/?appid=${gameId}`;
+                console.log(`   API URL: ${apiUrl}`);
+                console.log(`   Отправка запроса...`);
+
+                const startTime = Date.now();
+
+                // Запрос к нашему API
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    }
+                });
+
+                const endTime = Date.now();
+                const duration = (endTime - startTime) / 1000;
+
+                console.log(`   Время выполнения: ${duration.toFixed(2)} сек`);
+                console.log(`   Статус: ${response.status}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ошибка: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log(`   Ответ получен:`);
+                console.log(`   - success: ${data.success}`);
+                console.log(`   - api_used: ${data.api_used || 'unknown'}`);
+                console.log(`   - total_count: ${data.total_count}`);
+                console.log(`   - message: ${data.message}`);
+
+                if (data.api_url) {
+                    console.log(`   - api_url: ${data.api_url}`);
+                }
+
+                if (data.error) {
+                    console.error(`   ❌ Ошибка: ${data.error}`);
+                    throw new Error(data.error);
+                }
+
+                if (data.items && data.items.length > 0) {
+                    console.log(`   ✅ Успешно загружено: ${data.items.length} предметов`);
+
+                    // Логируем первые 3 предмета для отладки
+                    data.items.slice(0, 3).forEach((item, index) => {
+                        console.log(`   Пример ${index + 1}: ${item.name || 'Без названия'} [${item.tradable ? '🟢' : '🔴'}]`);
+                    });
+
+                    // Обновляем статистику
+                    updateStats(data.items.length, data.total_count);
+
+                    // Отображаем инвентарь
+                    renderInventory(data.items);
+
+                } else {
+                    console.log(`   ℹ️ Инвентарь пуст или недоступен`);
+                    showEmptyInventoryMessage(data);
+                }
 
             } catch (error) {
-                console.error('Ошибка загрузки инвентаря:', error);
-                document.getElementById('inventoryItems').innerHTML = `
-                    <div class="empty-state">
-                        <img src="https://cdn.jsdelivr.net/npm/twemoji@latest/assets/svg/26a0.svg" alt="Предупреждение">
-                        <h3>Ошибка загрузки</h3>
-                        <p>Не удалось загрузить инвентарь. Попробуйте позже.</p>
-                    </div>
-                `;
+                console.error(`   ❌ Ошибка загрузки:`, error);
+                showErrorMessage(error);
             }
         }
 
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function() {
-            // Загружаем инвентарь
-            loadSteamInventory();
+        // Функция для отображения сообщения о пустом инвентаре
+        function showEmptyInventoryMessage(data) {
+            const container = document.getElementById('inventoryItems');
 
-            // Назначаем обработчики для вкладок игр
-            const gameTabs = document.querySelectorAll('.game-tab');
-            gameTabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Убираем активный класс у всех вкладок
-                    gameTabs.forEach(t => t.classList.remove('active'));
+            let message = `
+                <div class="empty-state">
+                    <img src="https://cdn.jsdelivr.net/npm/twemoji@latest/assets/svg/1f9ca.svg" alt="Пусто">
+                    <h3>Инвентарь пуст или недоступен</h3>
+                    <p>Не удалось загрузить предметы из Steam инвентаря</p>
+            `;
 
-                    // Добавляем активный класс текущей вкладке
-                    this.classList.add('active');
+            if (data.api_url) {
+                message += `
+                    <p style="margin-top: 15px; font-size: 14px;">
+                        <a href="${data.api_url}" target="_blank" style="color: #4f7bff;">
+                            🔗 Попробовать открыть напрямую в Steam
+                        </a>
+                    </p>
+                `;
+            }
 
-                    // Получаем ID игры из data-атрибута
-                    const gameId = this.getAttribute('data-game');
+            message += `
+                    <div style="margin-top: 20px; font-size: 14px; color: #8a94a6; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto;">
+                        <p><strong>Возможные причины:</strong></p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>В инвентаре нет предметов для выбранной игры</li>
+                            <li>Настройки приватности Steam ограничивают доступ к инвентарю</li>
+                            <li>Steam API временно недоступен</li>
+                        </ul>
 
-                    // Отображаем инвентарь для выбранной игры
-                    renderInventory(gameId);
-                });
-            });
+                        <p style="margin-top: 15px;"><strong>Проверьте настройки приватности Steam:</strong></p>
+                        <ol style="margin: 10px 0; padding-left: 20px;">
+                            <li>Зайдите в настройки Steam</li>
+                            <li>Перейдите в "Конфиденциальность"</li>
+                            <li>Установите "Публичный" для "Профиль моего инвентаря"</li>
+                        </ol>
+                    </div>
 
-            // Анимация для карточек
-            const cards = document.querySelectorAll('.inventory-item-card, .action-card');
-            cards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.2)';
-                });
+                    <p style="margin-top: 20px;">
+                        <a href="https://steamcommunity.com/profiles/{{ steam_data.steam_id }}/edit/settings"
+                           target="_blank"
+                           class="btn btn-login"
+                           style="padding: 10px 20px; font-size: 14px;">
+                            ⚙️ Проверить настройки приватности Steam
+                        </a>
+                    </p>
+                </div>
+            `;
 
-                card.addEventListener('mouseleave', function() {
-                    this.style.boxShadow = '';
-                });
-            });
-        });
+            container.innerHTML = message;
+        }
+
+        // Функция для отображения ошибки
+        function showErrorMessage(error) {
+            const container = document.getElementById('inventoryItems');
+
+            let errorMessage = error.message;
+            if (error.message.includes('private') || error.message.includes('приват')) {
+                errorMessage = 'Инвентарь приватный. Измените настройки приватности Steam.';
+            }
+
+            container.innerHTML = `
+                <div class="empty-state">
+                    <img src="https://cdn.jsdelivr.net/npm/twemoji@latest/assets/svg/26a0.svg" alt="Ошибка">
+                    <h3>Ошибка загрузки</h3>
+                    <p>${errorMessage}</p>
+
+                    <div style="margin-top: 20px;">
+                        <button onclick="loadSteamInventory('all')" class="btn btn-login">
+                            🔄 Попробовать снова
+                        </button>
+
+                        <a href="https://steamcommunity.com/profiles/{{ steam_data.steam_id }}/inventory/"
+                           target="_blank"
+                           class="btn btn-view"
+                           style="margin-left: 10px;">
+                            🌐 Открыть в Steam
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
     </script>
 </body>
 </html>

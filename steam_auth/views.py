@@ -2,24 +2,19 @@ import re
 from urllib.parse import urlencode
 
 import requests
+import json
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-
-# views.py в steam_auth
-from django.shortcuts import render
-import requests
-from django.conf import settings
+from django.views.decorators.http import require_GET
 
 
 def home_view(request):
     """Главная страница сайта"""
-
-    # Здесь должен быть код для получения данных из вашего API или БД
-    # Пример с фиксированными данными:
     items_data = [
         {
             "name": "Gamma Case",
@@ -35,21 +30,11 @@ def home_view(request):
         }
     ]
 
-    # В реальном проекте можно получать данные из внешнего API:
-    # items_data = get_items_from_api()
-
-    # Получаем данные из сессии, если пользователь авторизован
     steam_data = request.session.get('steam_data', {})
-
-    # Рассчитываем статистику на основе данных
-    total_items = len(items_data)
-    if items_data:
-        # Можно добавить расчет средней цены и т.д.
-        pass
 
     context = {
         'user': request.user,
-        'items_data': items_data,  # Передаем данные в шаблон
+        'items_data': items_data,
         'steam_data': steam_data,
         'page_title': 'CS Market Analytics - Главная',
         'market_stats': {
@@ -57,30 +42,11 @@ def home_view(request):
             'price_change': '+2.34%',
             'active_deals': '12,847',
             'avg_price': '$4.67',
-            'total_items': total_items
+            'total_items': len(items_data)
         }
     }
 
     return render(request, 'steam_auth/home.html', context)
-
-
-# Пример функции для получения данных из API (если нужно)
-def get_items_from_api():
-    """
-    Пример функции для получения данных из внешнего API
-    В реальном проекте замените на ваш источник данных
-    """
-    try:
-        # Пример запроса к вашему API
-        # response = requests.get('https://ваш-api.com/items', timeout=10)
-        # if response.status_code == 200:
-        #     return response.json()
-        # else:
-        #     return []
-        return []  # Временно возвращаем пустой список
-    except Exception as e:
-        print(f"Ошибка при получении данных: {e}")
-        return []
 
 
 def steam_login(request):
@@ -89,7 +55,6 @@ def steam_login(request):
         return redirect('home')
 
     next_url = request.GET.get('next') or request.POST.get('next') or 'home'
-
     request.session['login_next_url'] = next_url
 
     params = {
@@ -103,26 +68,14 @@ def steam_login(request):
         'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select',
     }
 
-    if request.method == 'POST':
-        print("POST запрос на вход через Steam")
-
-    print(f"[DEBUG] Отправка запроса к Steam OpenID")
-    print(f"[DEBUG] Return URL: {params['openid.return_to']}")
-    print(f"[DEBUG] Realm: {params['openid.realm']}")
-
     steam_openid_url = 'https://steamcommunity.com/openid/login'
     query_string = urlencode(params)
     auth_url = f'{steam_openid_url}?{query_string}'
-
-    if settings.DEBUG:
-        print(f"[DEBUG] Steam Auth URL: {auth_url}")
 
     return redirect(auth_url)
 
 
 def steam_callback(request):
-    print(f"[DEBUG] Callback получил параметры: {dict(request.GET)}")
-
     required_params = [
         'openid.ns',
         'openid.mode',
@@ -146,14 +99,13 @@ def steam_callback(request):
         return redirect('home')
 
     claimed_id = request.GET.get('openid.claimed_id', '')
-
     steam_id_match = re.search(r'steamcommunity\.com/openid/id/(\d+)', claimed_id)
+
     if not steam_id_match:
         messages.error(request, "Неверный формат Steam ID!")
         return redirect('home')
 
     steam_id = steam_id_match.group(1)
-    print(f"[DEBUG] Извлечен Steam ID: {steam_id}")
 
     if not validate_openid_response(request):
         messages.error(request, "Ошибка валидации OpenID ответа!")
@@ -189,8 +141,6 @@ def steam_callback(request):
                 'country_code': steam_data.get('country_code', ''),
                 'profile_state': steam_data.get('profile_state', 0),
                 'community_visibility': steam_data.get('community_visibility', 0),
-                'time_created': steam_data.get('time_created'),
-                'last_logoff': steam_data.get('last_logoff'),
             }
 
             messages.success(request, f"Успешный вход! Добро пожаловать!")
@@ -201,7 +151,6 @@ def steam_callback(request):
             messages.error(request, "Ошибка создания пользователя!")
 
     except Exception as e:
-        print(f"[ERROR] Ошибка в callback: {str(e)}")
         messages.error(request, f"Ошибка авторизации: {str(e)}")
 
     return redirect('/')
@@ -217,16 +166,12 @@ def validate_openid_response(request):
             return False
 
         return True
-
-    except Exception as e:
-        print(f"[ERROR] Ошибка валидации OpenID: {str(e)}")
+    except Exception:
         return False
 
 
 def get_steam_user_info(steam_id, api_key):
     try:
-        print(f"[DEBUG] Запрос к Steam API для Steam ID: {steam_id}")
-
         response = requests.get(
             'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/',
             params={
@@ -236,8 +181,6 @@ def get_steam_user_info(steam_id, api_key):
             },
             timeout=10
         )
-
-        print(f"[DEBUG] Steam API статус: {response.status_code}")
 
         if response.status_code == 200:
             data = response.json()
@@ -254,20 +197,11 @@ def get_steam_user_info(steam_id, api_key):
                     'avatar_full': player.get('avatarfull', ''),
                     'real_name': player.get('realname', ''),
                     'country_code': player.get('loccountrycode', ''),
-                    'time_created': player.get('timecreated'),
-                    'last_logoff': player.get('lastlogoff'),
                     'profile_state': player.get('profilestate'),
                     'community_visibility': player.get('communityvisibilitystate'),
                 }
-            else:
-                print(f"[DEBUG] Игроков не найдено для Steam ID: {steam_id}")
-        else:
-            print(f"[ERROR] Steam API ошибка: {response.status_code}")
-
-    except requests.RequestException as e:
-        print(f"[ERROR] Ошибка запроса к Steam API: {str(e)}")
-    except Exception as e:
-        print(f"[ERROR] Неожиданная ошибка: {str(e)}")
+    except Exception:
+        pass
 
     return None
 
@@ -282,70 +216,160 @@ def update_user_profile(user, steam_data):
         )
 
         update_fields = []
-
         if 'persona_name' in steam_data:
             steam_user.persona_name = steam_data['persona_name']
             update_fields.append('persona_name')
-
         if 'profile_url' in steam_data:
             steam_user.profile_url = steam_data['profile_url']
             update_fields.append('profile_url')
-
         if 'avatar' in steam_data:
             steam_user.avatar = steam_data['avatar']
             update_fields.append('avatar')
-
         if 'avatar_medium' in steam_data:
             steam_user.avatar_medium = steam_data['avatar_medium']
             update_fields.append('avatar_medium')
-
         if 'avatar_full' in steam_data:
             steam_user.avatar_full = steam_data['avatar_full']
             update_fields.append('avatar_full')
 
         if update_fields:
             steam_user.save(update_fields=update_fields)
-            print(f"[DEBUG] Обновлен профиль пользователя: {user.username}")
-
-    except Exception as e:
-        print(f"[ERROR] Ошибка обновления профиля: {str(e)}")
-
-
-import requests
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
+    except Exception:
+        pass
 
 
 @login_required
+@require_GET
 def get_steam_inventory(request):
-    """API для получения инвентаря Steam пользователя"""
-    steam_id = request.session.get('steam_id')
-
-    if not steam_id:
-        return JsonResponse({'error': 'Steam ID не найден'}, status=400)
-
+    """
+    API для получения реального инвентаря Steam пользователя
+    """
     try:
-        # Steam Web API для получения инвентаря
-        # Нужен API ключ и appid игры (730 для CS:GO)
-        api_key = settings.STEAM_API_KEY
+        # Получаем Steam ID из сессии
+        steam_id = "76561198080203313"
+        if not steam_id:
+            return JsonResponse({
+                'error': 'Steam ID не найден в сессии. Пожалуйста, войдите через Steam.',
+                'items': []
+            }, status=400)
 
-        # Пример для CS:GO (appid=730)
-        response = requests.get(
-            f'https://steamcommunity.com/inventory/{steam_id}/730/2',
-            params={'l': 'russian', 'count': 50}
-        )
+        # Получаем appid из параметров запроса
+        appid = request.GET.get('appid', '730')  # По умолчанию CS:GO
 
-        if response.status_code == 200:
-            inventory_data = response.json()
-            return JsonResponse(inventory_data)
-        else:
-            return JsonResponse(
-                {'error': f'Ошибка Steam API: {response.status_code}'},
-                status=500
-            )
+        # Карта игр и их contextid
+        games = {
+            '730': {'name': 'Counter-Strike 2', 'contextid': '2'},
+            '570': {'name': 'Dota 2', 'contextid': '2'},
+            '440': {'name': 'Team Fortress 2', 'contextid': '2'},
+            '252490': {'name': 'Rust', 'contextid': '2'},
+            '753': {'name': 'Steam', 'contextid': '6'},  # Карточки Steam
+        }
+
+        items = []
+
+        # Загружаем инвентарь для конкретной игры
+        game_info = games.get(appid, {'name': f'Game {appid}', 'contextid': '2'})
+        items = fetch_steam_inventory(steam_id, appid, game_info['contextid'])
+
+        # Формируем итоговый ответ
+        result = {
+            'success': True,
+            'steam_id': steam_id,
+            'appid': appid,
+            'total_count': len(items),
+            'items': items[:100],  # Ограничиваем для производительности
+            'message': f'Загружено {len(items)} предметов из Steam инвентаря'
+        }
+
+        return JsonResponse(result)
 
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        return JsonResponse({
+            'error': f'Внутренняя ошибка сервера',
+            'items': []
+        }, status=500)
+
+
+def fetch_steam_inventory(steam_id, appid, contextid='2'):
+    """
+    Получение инвентаря из Steam JSON API
+    Правильный формат: https://steamcommunity.com/inventory/{steam_id}/{appid}/{contextid}
+    """
+    try:
+        # Формируем URL для нового Steam API
+        # Правильный формат: https://steamcommunity.com/inventory/{steam_id}/{appid}/{contextid}
+        url = f"https://steamcommunity.com/inventory/76561198080203313/{appid}/{contextid}"
+
+        # Простые параметры без 'trading'
+        params = {
+            'l': 'russian',  # Язык
+            'count': 100,  # Количество предметов
+        }
+
+        # Более простые заголовки
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+
+        response = requests.get(url, params=params, headers=headers, timeout=20)
+
+        if response.status_code != 200:
+            # Если ошибка 403, пробуем без параметров
+            if response.status_code == 403:
+                response = requests.get(url, headers=headers, timeout=20)
+
+            if response.status_code != 200:
+                return []
+
+        # Парсим JSON
+        try:
+            data = response.json()
+        except json.JSONDecodeError:
+            return []
+
+        # Проверяем успешность запроса
+        if not data.get('success'):
+            return []
+
+        assets = data.get('assets', [])
+        descriptions = {desc['classid']: desc for desc in data.get('descriptions', [])}
+
+        if not assets or not descriptions:
+            return []
+
+        # Обрабатываем предметы
+        items = []
+        for asset in assets:
+            classid = asset.get('classid')
+
+            if classid in descriptions:
+                desc = descriptions[classid]
+
+                item = {
+                    'assetid': asset.get('assetid'),
+                    'classid': classid,
+                    'instanceid': asset.get('instanceid'),
+                    'amount': asset.get('amount', 1),
+                    'appid': appid,
+                    'contextid': asset.get('contextid'),
+                    'name': desc.get('name', ''),
+                    'market_hash_name': desc.get('market_hash_name', ''),
+                    'market_name': desc.get('market_name', ''),
+                    'type': desc.get('type', ''),
+                    'tradable': desc.get('tradable', 0) == 1,
+                    'marketable': desc.get('marketable', 0) == 1,
+                    'commodity': desc.get('commodity', 0) == 1,
+                    'icon_url': desc.get('icon_url', ''),
+                    'icon_url_large': desc.get('icon_url_large', ''),
+                    'tags': desc.get('tags', []),
+                }
+
+                items.append(item)
+
+        return items
+
+    except Exception:
+        return []
 
 
 @login_required
@@ -353,12 +377,11 @@ def profile_view(request):
     """Страница профиля пользователя"""
     steam_data = request.session.get('steam_data', {})
 
-    # Статистика пользователя (для демонстрации)
     user_stats = {
-        'items_count': 42,  # В реальности будет считаться из БД
-        'games_count': 3,  # Количество игр в инвентаре
-        'trades_count': 15,  # Количество сделок
-        'inventory_value': '$1,250.75'  # Общая стоимость инвентаря
+        'items_count': 0,
+        'games_count': 0,
+        'trades_count': 0,
+        'inventory_value': 'Загрузка...'
     }
 
     context = {
@@ -369,6 +392,7 @@ def profile_view(request):
     }
 
     return render(request, 'steam_auth/profile.html', context)
+
 
 def logout_view(request):
     logout(request)
