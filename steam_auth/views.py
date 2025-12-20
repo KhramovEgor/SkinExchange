@@ -311,14 +311,64 @@ def update_user_profile(user, steam_data):
         print(f"[ERROR] Ошибка обновления профиля: {str(e)}")
 
 
+import requests
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+
+
+@login_required
+def get_steam_inventory(request):
+    """API для получения инвентаря Steam пользователя"""
+    steam_id = request.session.get('steam_id')
+
+    if not steam_id:
+        return JsonResponse({'error': 'Steam ID не найден'}, status=400)
+
+    try:
+        # Steam Web API для получения инвентаря
+        # Нужен API ключ и appid игры (730 для CS:GO)
+        api_key = settings.STEAM_API_KEY
+
+        # Пример для CS:GO (appid=730)
+        response = requests.get(
+            f'https://steamcommunity.com/inventory/{steam_id}/730/2',
+            params={'l': 'russian', 'count': 50}
+        )
+
+        if response.status_code == 200:
+            inventory_data = response.json()
+            return JsonResponse(inventory_data)
+        else:
+            return JsonResponse(
+                {'error': f'Ошибка Steam API: {response.status_code}'},
+                status=500
+            )
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
 @login_required
 def profile_view(request):
+    """Страница профиля пользователя"""
+    steam_data = request.session.get('steam_data', {})
+
+    # Статистика пользователя (для демонстрации)
+    user_stats = {
+        'items_count': 42,  # В реальности будет считаться из БД
+        'games_count': 3,  # Количество игр в инвентаре
+        'trades_count': 15,  # Количество сделок
+        'inventory_value': '$1,250.75'  # Общая стоимость инвентаря
+    }
+
     context = {
         'user': request.user,
-        'steam_data': request.session.get('steam_data', {}),
+        'steam_data': steam_data,
+        'user_stats': user_stats,
+        'page_title': f'Профиль {steam_data.get("persona_name", request.user.username)}',
     }
-    return render(request, 'steam_auth/profile.html', context)
 
+    return render(request, 'steam_auth/profile.html', context)
 
 def logout_view(request):
     logout(request)
