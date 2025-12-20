@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS Market Analysis - Сравнение цен</title>
+    <style>
+        /* === ОСНОВНЫЕ СТИЛИ === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0a0e17 0%, #1a1f2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* === ШАПКА === */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #2a2f3d;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #4f7bff, #6c5ce7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #b0b7c3;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #4f7bff;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-login {
+            background: linear-gradient(90deg, #4f7bff, #6c5ce7);
+            color: white;
+            border: 1px solid #4f7bff;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(90deg, #3a6bff, #5a4bd9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 123, 255, 0.3);
+        }
+
+        /* === ФИЛЬТРЫ === */
+        .filters-section {
+            background: rgba(26, 31, 46, 0.7);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #2a2f3d;
+            margin-bottom: 30px;
+        }
+
+        .filters-title {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filters-title::before {
+            content: "⚙️";
+            font-size: 20px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b0b7c3;
+            font-weight: 500;
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(42, 47, 61, 0.8);
+            border: 1px solid #3a3f4d;
+            border-radius: 8px;
+            color: #f0f0f0;
+            font-size: 14px;
+        }
+
+        .filter-input::placeholder {
+            color: #6c757d;
+        }
+
+        /* === ТАБЛИЦА СРАВНЕНИЯ === */
+        .comparison-section {
+            background: rgba(26, 31, 46, 0.7);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #2a2f3d;
+            overflow-x: auto;
+        }
+
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: "📊";
+            font-size: 20px;
+        }
+
+        .items-count {
+            color: #8a94a6;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        .comparison-table th {
+            background: rgba(42, 47, 61, 0.9);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #b0b7c3;
+            border-bottom: 2px solid #3a3f4d;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #2a2f3d;
+        }
+
+        .comparison-table tbody tr:hover {
+            background: rgba(42, 47, 61, 0.5);
+        }
+
+        /* Стили для колонок таблицы */
+        .item-col {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .item-image {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            border: 2px solid #3a3f4d;
+            object-fit: cover;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #f0f0f0;
+            margin-bottom: 4px;
+        }
+
+        .item-hash {
+            font-size: 12px;
+            color: #8a94a6;
+        }
+
+        .price-col {
+            font-weight: 600;
+        }
+
+        .lowest-price {
+            color: #00d09c;
+        }
+
+        .median-price {
+            color: #4f7bff;
+        }
+
+        .volume-col {
+            color: #f0f0f0;
+        }
+
+        .action-col {
+            text-align: center;
+        }
+
+        .btn-view {
+            padding: 8px 16px;
+            background: rgba(79, 123, 255, 0.1);
+            color: #4f7bff;
+            border: 1px solid #4f7bff;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-view:hover {
+            background: rgba(79, 123, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* === СТАТИСТИКА === */
+        .stats-section {
+            margin-top: 30px;
+            background: rgba(26, 31, 46, 0.7);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #2a2f3d;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: rgba(42, 47, 61, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #3a3f4d;
+        }
+
+        .stat-title {
+            font-size: 14px;
+            color: #8a94a6;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #f0f0f0;
+            margin-bottom: 5px;
+        }
+
+        .stat-change {
+            font-size: 14px;
+        }
+
+        .stat-change.positive {
+            color: #00d09c;
+        }
+
+        .stat-change.negative {
+            color: #ff4757;
+        }
+
+        /* === ФУТЕР === */
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #2a2f3d;
+            text-align: center;
+            color: #8a94a6;
+        }
+
+        /* === АДАПТИВНОСТЬ === */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-table {
+                font-size: 14px;
+            }
+
+            .item-col {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .item-image {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        /* Стили для пустого состояния */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #8a94a6;
+        }
+
+        .empty-state img {
+            width: 100px;
+            opacity: 0.5;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Шапка -->
+        <header class="header">
+            <a href="#" class="logo">CS Market Analysis</a>
+            <nav class="nav-links">
+                <a href="#">Главная</a>
+                <a href="#" style="color: #4f7bff; font-weight: 600;">Сравнение цен</a>
+                <a href="#">Топ предметов</a>
+                <a href="#">Аналитика</a>
+                <a href="#">Блог</a>
+            </nav>
+            <div class="auth-buttons">
+                <a href="#" class="btn btn-login">Войти через Steam</a>
+            </div>
+        </header>
+
+        <!-- Фильтры -->
+        <section class="filters-section">
+            <h2 class="filters-title">Фильтры</h2>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Цена</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" class="filter-input" placeholder="От 0" value="0">
+                        <input type="text" class="filter-input" placeholder="До 99999" value="99999">
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Значение прибыли</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" class="filter-input" placeholder="От 0" value="0">
+                        <input type="text" class="filter-input" placeholder="До 99999" value="99999">
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Ликвидность</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" class="filter-input" placeholder="От 0" value="0">
+                        <input type="text" class="filter-input" placeholder="До 100" value="100">
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Процент прибыли</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" class="filter-input" placeholder="От 0" value="0">
+                        <input type="text" class="filter-input" placeholder="До 100" value="100">
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="color: #8a94a6; font-size: 14px;">
+                    Все <span style="color: #4f7bff; font-weight: 600;">28 699</span> предметов
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <select class="filter-input" style="width: auto;">
+                        <option>Избранное</option>
+                        <option>Все предметы</option>
+                    </select>
+                    <select class="filter-input" style="width: auto;">
+                        <option>Цена в Steam</option>
+                        <option>Цена на маркете</option>
+                    </select>
+                    <select class="filter-input" style="width: auto;">
+                        <option>Ликвидность</option>
+                        <option>Прибыль</option>
+                        <option>Топ предмета</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Таблица сравнения -->
+        <section class="comparison-section">
+            <h2 class="section-title">
+                Сравнение цен
+                <span class="items-count">(2 предмета)</span>
+            </h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Предмет</th>
+                        <th>Минимальная цена</th>
+                        <th>Медианная цена</th>
+                        <th>Объем торгов</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody id="items-table">
+                    <!-- Данные будут вставлены через JavaScript -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Статистика -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-title">Средняя цена</div>
+                    <div class="stat-value">17,13 руб.</div>
+                    <div class="stat-change positive">↑ +2.3% за день</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Общий объем</div>
+                    <div class="stat-value">175,223</div>
+                    <div class="stat-change positive">↑ +15.7%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Предметов в сравнении</div>
+                    <div class="stat-value">2</div>
+                    <div class="stat-title">из 28,699 доступных</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Средняя ликвидность</div>
+                    <div class="stat-value">78%</div>
+                    <div class="stat-change negative">↓ -3.2%</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Футер -->
+        <footer class="footer">
+            <p>© 2024 CS Market Analysis. Все права защищены.</p>
+            <p style="margin-top: 10px; font-size: 14px;">Данные предоставляются Steam Community Market</p>
+        </footer>
+    </div>
+
+    <script>
+        // Данные из парсера (заглушка)
+        const itemsData = [
+            {
+                "name": "Кейс «Киловатт»",
+                "hash_name": "Kilowatt Case",
+                "price": {
+                    "lowest_price": "24,76 руб.",
+                    "median_price": "24,97 руб.",
+                    "volume": "134,692"
+                },
+                "image": "https://steamcommunity-a.akamaihd.net/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bj35VTqVBP4io_frnEVvqf_a6VoIfGSXz7Hlbwg57QwSS_mxhl15jiGyN37c3_GZw91W8BwRflK7EfKsa2sfw",
+                "url": "https://steamcommunity.com/market/listings/730/Kilowatt Case"
+            },
+            {
+                "name": "Капсула с наклейками кандидатов BLAST.tv Paris Major 2023",
+                "hash_name": "Paris 2023 Contenders Sticker Capsule",
+                "price": {
+                    "lowest_price": "9,50 руб.",
+                    "median_price": "9,67 руб.",
+                    "volume": "40,531"
+                },
+                "image": "https://steamcommunity-a.akamaihd.net/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bjn_lDkShjjoYbh_ilk__O8Ybc_cKLAMWSfz_pzvuVsXTr9kRki5m_Uwtz7cXKWO1ApCcByRLEO50LtkoWyP7_k4Afdi99GniT4jzQJsHjtsZcvVQ",
+                "url": "https://steamcommunity.com/market/listings/730/Paris 2023 Contenders Sticker Capsule"
+            }
+        ];
+
+        // Функция для отображения предметов в таблице
+        function renderItemsTable() {
+            const tableBody = document.getElementById('items-table');
+            tableBody.innerHTML = '';
+
+            itemsData.forEach(item => {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>
+                        <div class="item-col">
+                            <img src="${item.image}" alt="${item.name}" class="item-image" onerror="this.src='https://via.placeholder.com/48x48/2a2f3d/8a94a6?text=CS'">
+                            <div class="item-info">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-hash">${item.hash_name}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="price-col lowest-price">${item.price.lowest_price}</td>
+                    <td class="price-col median-price">${item.price.median_price}</td>
+                    <td class="volume-col">${item.price.volume}</td>
+                    <td class="action-col">
+                        <a href="${item.url}" target="_blank" class="btn-view">На Steam</a>
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', renderItemsTable);
+
+        // Обработчики для фильтров (заглушка)
+        document.querySelectorAll('.filter-input').forEach(input => {
+            input.addEventListener('input', function() {
+                console.log('Фильтр изменен:', this.value);
+                // Здесь будет логика фильтрации
+            });
+        });
+    </script>
+</body>
+</html>

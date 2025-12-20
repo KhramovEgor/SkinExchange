@@ -3,231 +3,654 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход через Steam</title>
+    <title>CS Market Analysis - Главная</title>
     <style>
+        /* === ОСНОВНЫЕ СТИЛИ === */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0a0e17 0%, #1a1f2e 100%);
+            color: #e0e0e0;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
         }
 
-        .login-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 50px;
-            text-align: center;
-            max-width: 500px;
-            width: 100%;
-            animation: fadeIn 0.5s ease-out;
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .logo {
+        /* === ШАПКА === */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #2a2f3d;
             margin-bottom: 30px;
         }
 
-        .logo img {
-            width: 100px;
-            height: 100px;
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 32px;
-        }
-
-        .subtitle {
-            color: #666;
-            margin-bottom: 40px;
-            font-size: 18px;
-            line-height: 1.5;
-        }
-
-        .steam-login-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #1b2838 0%, #171a21 100%);
-            color: white;
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #4f7bff, #6c5ce7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-decoration: none;
-            padding: 18px 40px;
-            border-radius: 50px;
-            font-size: 20px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #b0b7c3;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #4f7bff;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 8px;
             font-weight: 600;
-            transition: all 0.3s ease;
-            border: none;
             cursor: pointer;
-            width: 100%;
-            max-width: 350px;
-            box-shadow: 0 10px 30px rgba(27, 40, 56, 0.3);
-            margin-bottom: 20px;
+            border: none;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
         }
 
-        .steam-login-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(27, 40, 56, 0.4);
-            background: linear-gradient(135deg, #2a475e 0%, #1b2838 100%);
+        .btn-login {
+            background: linear-gradient(90deg, #4f7bff, #6c5ce7);
+            color: white;
+            border: 1px solid #4f7bff;
         }
 
-        .steam-login-btn:active {
-            transform: translateY(-1px);
+        .btn-login:hover {
+            background: linear-gradient(90deg, #3a6bff, #5a4bd9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 123, 255, 0.3);
         }
 
-        .steam-icon {
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar-small {
             width: 32px;
             height: 32px;
-            margin-right: 15px;
-            background: white;
             border-radius: 50%;
-            padding: 5px;
+            border: 2px solid #4f7bff;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
         }
 
-        .features {
-            margin-top: 40px;
-            text-align: left;
+        .user-avatar-small:hover {
+            transform: scale(1.1);
+            border-color: #66c0f4;
         }
 
-        .features h3 {
-            color: #333;
+        .username {
+            color: #f0f0f0;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .username:hover {
+            color: #66c0f4;
+        }
+
+        .username-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .username-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-logout {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+            border: 1px solid #ff4757;
+            padding: 8px 16px;
+        }
+
+        /* === ГЛАВНЫЙ ЗАГОЛОВОК === */
+        .hero {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
             margin-bottom: 15px;
+            background: linear-gradient(90deg, #fff, #b0b7c3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
             font-size: 20px;
+            color: #8a94a6;
+            max-width: 600px;
+            margin: 0 auto 30px;
         }
 
-        .features ul {
-            list-style: none;
-            padding-left: 0;
+        /* === СЕТКА КОНТЕНТА === */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
         }
 
-        .features li {
-            color: #555;
-            margin-bottom: 10px;
-            padding-left: 25px;
-            position: relative;
+        /* === ЛЕВАЯ КОЛОНКА: СПИСОК ПРЕДМЕТОВ === */
+        .items-section {
+            background: rgba(26, 31, 46, 0.7);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #2a2f3d;
         }
 
-        .features li:before {
-            content: "✓";
-            color: #4CAF50;
-            position: absolute;
-            left: 0;
-            font-weight: bold;
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .error-message {
-            background-color: #ffebee;
-            color: #c62828;
-            padding: 15px;
+        .section-title::before {
+            content: "▸";
+            color: #4f7bff;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .item-card {
+            background: rgba(42, 47, 61, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #3a3f4d;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            border-color: #4f7bff;
+        }
+
+        .item-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .item-image {
+            width: 64px;
+            height: 64px;
             border-radius: 8px;
+            border: 2px solid #3a3f4d;
+            object-fit: cover;
+        }
+
+        .item-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f0f0f0;
+        }
+
+        .item-price {
+            font-size: 22px;
+            font-weight: 700;
+            color: #4f7bff;
+            margin-bottom: 15px;
+        }
+
+        .item-link {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            background: rgba(79, 123, 255, 0.1);
+            color: #4f7bff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .item-link:hover {
+            background: rgba(79, 123, 255, 0.2);
+        }
+
+        /* === ПРАВАЯ КОЛОНКА: СТАТИСТИКА И ФИЛЬТРЫ === */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .stats-box, .filters-box {
+            background: rgba(26, 31, 46, 0.7);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #2a2f3d;
+        }
+
+        .stats-title, .filters-title {
+            font-size: 20px;
             margin-bottom: 20px;
-            border-left: 4px solid #c62828;
+            color: #f0f0f0;
         }
 
-        .info-message {
-            background-color: #e3f2fd;
-            color: #1565c0;
-            padding: 15px;
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #2a2f3d;
+        }
+
+        .stat-label {
+            color: #8a94a6;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #f0f0f0;
+        }
+
+        .stat-change {
+            font-size: 14px;
+        }
+
+        .stat-change.positive {
+            color: #00d09c;
+        }
+
+        .stat-change.negative {
+            color: #ff4757;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b0b7c3;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(42, 47, 61, 0.8);
+            border: 1px solid #3a3f4d;
             border-radius: 8px;
-            margin-top: 20px;
-            border-left: 4px solid #1565c0;
+            color: #f0f0f0;
         }
 
-        @media (max-width: 600px) {
-            .login-container {
-                padding: 30px 20px;
+        .feature-highlight {
+            background: linear-gradient(90deg, rgba(79, 123, 255, 0.1), rgba(108, 92, 231, 0.1));
+            padding: 25px;
+            border-radius: 16px;
+            margin-top: 20px;
+        }
+
+        .feature-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #f0f0f0;
+        }
+
+        /* === ФУТЕР === */
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #2a2f3d;
+            text-align: center;
+            color: #8a94a6;
+        }
+
+        /* === АДАПТИВНОСТЬ === */
+        @media (max-width: 1024px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
             }
 
-            h1 {
-                font-size: 24px;
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
             }
 
-            .steam-login-btn {
-                padding: 15px 30px;
-                font-size: 18px;
+            .hero h1 {
+                font-size: 36px;
             }
+
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        /* Стили для пустого состояния */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #8a94a6;
+        }
+
+        .empty-state img {
+            width: 100px;
+            opacity: 0.5;
+            margin-bottom: 20px;
+        }
+
+        /* Дополнительные стили для профиля */
+        .profile-indicator {
+            font-size: 12px;
+            color: #66c0f4;
+            margin-left: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="logo">
-            <svg width="100" height="100" viewBox="0 0 24 24" fill="#171a21">
-                <path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.074 0 .147.004.22.007l2.86-4.406V8.91c0-1.441 1.126-2.61 2.515-2.61 1.389 0 2.515 1.169 2.515 2.61 0 1.441-1.126 2.61-2.515 2.61-.271 0-.531-.041-.776-.115l-4.447 2.561c.004.082.011.164.011.249 0 1.455-1.138 2.634-2.543 2.634-1.405 0-2.543-1.179-2.543-2.634 0-1.455 1.138-2.634 2.543-2.634.084 0 .168.004.25.011l2.697-4.192c-.091-.301-.148-.618-.148-.949 0-1.441 1.126-2.61 2.515-2.61 1.389 0 2.515 1.169 2.515 2.61 0 1.441-1.126 2.61-2.515 2.61-.096 0-.189-.004-.282-.011l-2.691 4.188c.146.358.229.75.229 1.161 0 1.456-1.138 2.634-2.543 2.634-1.406 0-2.543-1.178-2.543-2.634 0-1.455 1.137-2.634 2.543-2.634.084 0 .168.004.25.011l2.697-4.192c-.091-.301-.148-.618-.148-.949 0-1.441 1.126-2.61 2.515-2.61 1.389 0 2.515 1.169 2.515 2.61 0 1.441-1.126 2.61-2.515 2.61z"/>
-            </svg>
-        </div>
+    <div class="container">
+        <!-- Шапка сайта -->
+        <header class="header">
+            <a href="{% url 'home' %}" class="logo">CSMARKET ANALYTICS</a>
+            <nav class="nav-links">
+                <a href="{% url 'home' %}">Главная</a>
+                <a href="#">Сравнение цен</a>
+                <a href="#">Рынок</a>
+                <a href="#">Аналитика</a>
+                <a href="#">Новости</a>
+            </nav>
 
-        <h1>Войдите через Steam</h1>
-        <p class="subtitle">Используйте свой Steam аккаунт для быстрой и безопасной авторизации</p>
+            <div class="auth-buttons">
+                {% if user.is_authenticated %}
+                    <!-- Показываем информацию о пользователе если авторизован -->
+                    <div class="user-info">
+                        {% if request.session.steam_data.avatar_medium %}
+                            <a href="{% url 'profile' %}" class="username-link">
+                                <img src="{{ request.session.steam_data.avatar_medium }}"
+                                     alt="Аватар"
+                                     class="user-avatar-small"
+                                     title="Перейти в профиль">
+                            </a>
+                        {% endif %}
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="{% if message.tags == 'error' %}error-message{% else %}info-message{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+                        <a href="{% url 'profile' %}" class="username-link">
+                            <span>
+                                <!-- Показываем никнейм из Steam, если есть, иначе username -->
+                                {% if request.session.steam_data.persona_name %}
+                                    {{ request.session.steam_data.persona_name }}
+                                {% else %}
+                                    {{ user.username }}
+                                {% endif %}
+                                <span class="profile-indicator">▶</span>
+                            </span>
+                        </a>
 
-        <a href="{% url 'steam_auth:login' %}" class="steam-login-btn">
-            <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/steam.svg"
-                 alt="Steam"
-                 class="steam-icon">
-            Войти через Steam
-        </a>
-
-        <div class="features">
-            <h3>Преимущества входа через Steam:</h3>
-            <ul>
-                <li>Безопасность ваших данных</li>
-                <li>Мгновенная регистрация</li>
-                <li>Доступ к аватару и никнейму</li>
-                <li>Не нужно запоминать пароль</li>
-            </ul>
-        </div>
-
-        {% if not user.is_authenticated %}
-            <div class="info-message">
-                <strong>Внимание:</strong> После нажатия кнопки вы будете перенаправлены на страницу авторизации Steam.
+                        <a href="{% url 'steam_auth:logout' %}" class="btn btn-logout">Выйти</a>
+                    </div>
+                {% else %}
+                    <!-- Показываем кнопку входа если не авторизован -->
+                    <a href="{% url 'steam_auth:login' %}" class="btn btn-login">Войти через Steam</a>
+                {% endif %}
             </div>
-        {% endif %}
+        </header>
+
+        <!-- Основной заголовок -->
+        <section class="hero">
+            <h1>ВЕДУЩИЙ АНАЛИТИК ЭКОНОМИКИ ИГРОВЫХ ПРЕДМЕТОВ</h1>
+            <p>Найдите лучшие предложения и обменивайте скины CS2 с максимальной выгодой</p>
+
+            {% if not user.is_authenticated %}
+                <div style="margin-top: 30px;">
+                    <a href="{% url 'steam_auth:login' %}" class="btn btn-login"
+                       style="padding: 15px 40px; font-size: 18px;">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/steam.svg"
+                             alt="Steam"
+                             style="width: 24px; height: 24px; margin-right: 10px; vertical-align: middle;">
+                        Войти через Steam для доступа к аналитике
+                    </a>
+                </div>
+            {% else %}
+                <div style="margin-top: 20px; color: #66c0f4; font-size: 16px;">
+                    👋 Привет,
+                    {% if request.session.steam_data.persona_name %}
+                        {{ request.session.steam_data.persona_name }}!
+                    {% else %}
+                        {{ user.username }}!
+                    {% endif %}
+                    <a href="{% url 'profile' %}" style="color: #4f7bff; margin-left: 10px; text-decoration: none;">
+                        [Перейти в профиль]
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Основной контент -->
+        <div class="grid-container">
+            <!-- Левая колонка: список предметов -->
+            <main class="items-section">
+                <h2 class="section-title">Популярные скины</h2>
+
+                <div class="items-grid">
+                    {% if items_data %}
+                        <!-- Отображаем предметы из items_data -->
+                        {% for item in items_data %}
+                        <div class="item-card">
+                            <div class="item-header">
+                                <img src="{{ item.image }}"
+                                     alt="{{ item.name }}"
+                                     class="item-image"
+                                     onerror="this.src='https://via.placeholder.com/64x64/2a2f3d/8a94a6?text=?'">
+                                <div>
+                                    <h3 class="item-name">{{ item.name }}</h3>
+                                    <div class="item-price">{{ item.current_price }}</div>
+                                </div>
+                            </div>
+                            <a href="{{ item.url }}" target="_blank" class="item-link">
+                                Перейти на маркет
+                            </a>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Если items_data пустой -->
+                        <div class="empty-state" style="grid-column: 1 / -1;">
+                            <img src="https://cdn.jsdelivr.net/npm/twemoji@latest/assets/svg/1f4a1.svg" alt="Лампочка">
+                            <h3>Нет доступных предметов</h3>
+                            <p>В данный момент нет данных для отображения.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </main>
+
+            <!-- Правая колонка: статистика и фильтры -->
+            <aside class="sidebar">
+                <!-- Статистика -->
+                <div class="stats-box">
+                    <h3 class="stats-title">📈 Статистика рынка</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Объем торгов за 24ч</span>
+                        <span class="stat-value">{{ market_stats.daily_volume|default:"$1.2M" }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Изменение цены</span>
+                        <span class="stat-value positive">{{ market_stats.price_change|default:"+2.34%" }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Активных сделок</span>
+                        <span class="stat-value">{{ market_stats.active_deals|default:"12,847" }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Всего предметов</span>
+                        <span class="stat-value">{{ items_data|length|default:"2" }}</span>
+                    </div>
+                </div>
+
+                <!-- Фильтры -->
+                <div class="filters-box">
+                    <h3 class="filters-title">🔍 Расширенный поиск</h3>
+                    <div class="filter-group">
+                        <label class="filter-label">Тип предмета</label>
+                        <select class="filter-select" id="item-type-filter">
+                            <option value="all">Все предметы</option>
+                            <option value="case">Кейсы</option>
+                            <option value="weapon">Оружие</option>
+                            <option value="gloves">Перчатки</option>
+                            <option value="knife">Ножи</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Сортировка</label>
+                        <select class="filter-select" id="sort-filter">
+                            <option value="price_desc">По цене (убывание)</option>
+                            <option value="price_asc">По цене (возрастание)</option>
+                            <option value="name">По названию</option>
+                        </select>
+                    </div>
+
+                    <!-- Блок для неавторизованных пользователей -->
+                    {% if not user.is_authenticated %}
+                    <div class="feature-highlight">
+                        <h4 class="feature-title">🔒 Доступ к расширенным функциям</h4>
+                        <p>Войдите через Steam чтобы получить доступ к:</p>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>Персональным рекомендациям</li>
+                            <li>Истории сделок</li>
+                            <li>Расширенной аналитике</li>
+                            <li>Избранным предметам</li>
+                        </ul>
+                        <a href="{% url 'steam_auth:login' %}" class="btn btn-login"
+                           style="margin-top: 15px; display: block;">
+                            Войти через Steam
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </aside>
+        </div>
+
+        <!-- Футер -->
+        <footer class="footer">
+            <p>© 2024 CS Market Analytics. Все данные предоставлены Steam Community Market.</p>
+            <p style="margin-top: 10px; font-size: 14px;">
+                Отображено предметов: <strong>{{ items_data|length }}</strong>
+            </p>
+
+            {% if user.is_authenticated %}
+                <p style="margin-top: 10px; font-size: 14px;">
+                    Вы вошли как:
+                    <strong>
+                        {% if request.session.steam_data.persona_name %}
+                            {{ request.session.steam_data.persona_name }}
+                        {% else %}
+                            {{ user.username }}
+                        {% endif %}
+                    </strong>
+                    | <a href="{% url 'profile' %}" style="color: #4f7bff;">Профиль</a>
+                    | <a href="{% url 'steam_auth:logout' %}" style="color: #ff4757;">Выйти</a>
+                </p>
+            {% endif %}
+        </footer>
     </div>
 
     <script>
+        // Обработчики для фильтров
         document.addEventListener('DOMContentLoaded', function() {
-            const steamBtn = document.querySelector('.steam-login-btn');
-            if (steamBtn) {
-                steamBtn.addEventListener('click', function(e) {
-                    // Можно добавить анимацию загрузки
-                    this.innerHTML = '<span>Перенаправление на Steam...</span>';
+            const itemTypeFilter = document.getElementById('item-type-filter');
+            const sortFilter = document.getElementById('sort-filter');
 
-                    // Можно добавить таймер для отображения процесса
-                    setTimeout(() => {
-                        this.innerHTML = '<span>Пожалуйста, подождите...</span>';
-                    }, 1000);
+            // В реальном проекте здесь будет AJAX-запрос для фильтрации
+            if (itemTypeFilter) {
+                itemTypeFilter.addEventListener('change', function() {
+                    console.log('Фильтр по типу:', this.value);
+                    // Здесь будет логика фильтрации
                 });
             }
 
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('error')) {
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'error-message';
-                errorDiv.innerHTML = '<strong>Ошибка:</strong> ' + urlParams.get('error');
-                document.querySelector('.login-container').prepend(errorDiv);
+            if (sortFilter) {
+                sortFilter.addEventListener('change', function() {
+                    console.log('Сортировка:', this.value);
+                    // Здесь будет логика сортировки
+                });
             }
+
+            // Добавляем обработчик для кнопки входа
+            const loginBtn = document.querySelector('.btn-login');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function(e) {
+                    // Можно добавить анимацию загрузки
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<span>Перенаправление на Steam...</span>';
+                    this.style.opacity = '0.7';
+
+                    // Восстанавливаем текст через 2 секунды (на случай ошибки)
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.style.opacity = '1';
+                    }, 2000);
+                });
+            }
+
+            // Анимация для клика на аватар
+            const avatars = document.querySelectorAll('.user-avatar-small');
+            avatars.forEach(avatar => {
+                avatar.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+                });
+            });
         });
     </script>
 </body>
