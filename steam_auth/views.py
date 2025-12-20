@@ -396,6 +396,190 @@ def profile_view(request):
     return render(request, 'steam_auth/profile.html', context)
 
 
+@login_required
+def compare_prices_view(request):
+    """Страница сравнения цен предметов"""
+
+    # Данные для заглушки (в будущем будут браться из парсера)
+    items_data = [
+        {
+            "name": "Кейс «Киловатт»",
+            "hash_name": "Kilowatt Case",
+            "price": {
+                "lowest_price": "24,76 руб.",
+                "median_price": "24,97 руб.",
+                "volume": "134,692"
+            },
+            "image": "https://steamcommunity-a.akamaihd.net/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bj35VTqVBP4io_frnEVvqf_a6VoIfGSXz7Hlbwg57QwSS_mxhl15jiGyN37c3_GZw91W8BwRflK7EfKsa2sfw",
+            "url": "https://steamcommunity.com/market/listings/730/Kilowatt%20Case"
+        },
+        {
+            "name": "Капсула с наклейками кандидатов BLAST.tv Paris Major 2023",
+            "hash_name": "Paris 2023 Contenders Sticker Capsule",
+            "price": {
+                "lowest_price": "9,50 руб.",
+                "median_price": "9,67 руб.",
+                "volume": "40,531"
+            },
+            "image": "https://steamcommunity-a.akamaihd.net/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bjn_lDkShjjoYbh_ilk__O8Ybc_cKLAMWSfz_pzvuVsXTr9kRki5m_Uwtz7cXKWO1ApCcByRLEO50LtkoWyP7_k4Afdi99GniT4jzQJsHjtsZcvVQ",
+            "url": "https://steamcommunity.com/market/listings/730/Paris%202023%20Contenders%20Sticker%20Capsule"
+        },
+        {
+            "name": "Кейс с оружием «Гамма»",
+            "hash_name": "Gamma Case",
+            "price": {
+                "lowest_price": "477,09 руб.",
+                "median_price": "480,50 руб.",
+                "volume": "89,123"
+            },
+            "image": "https://steamcommunity-a.akamaihd.net/economy/image/class/730/5661248291/62fx62f",
+            "url": "https://steamcommunity.com/market/listings/730/Gamma%20Case"
+        },
+        {
+            "name": "Кейс «Зона опасности»",
+            "hash_name": "Danger Zone Case",
+            "price": {
+                "lowest_price": "134,70 руб.",
+                "median_price": "136,20 руб.",
+                "volume": "201,456"
+            },
+            "image": "https://steamcommunity-a.akamaihd.net/economy/image/class/730/5661248289/62fx62f",
+            "url": "https://steamcommunity.com/market/listings/730/Danger%20Zone%20Case"
+        }
+    ]
+
+    # Получаем Steam данные из сессии
+    steam_data = request.session.get('steam_data', {})
+
+    # Параметры фильтров из GET запроса
+    min_price = request.GET.get('min_price', '0')
+    max_price = request.GET.get('max_price', '99999')
+    min_profit = request.GET.get('min_profit', '0')
+    max_profit = request.GET.get('max_profit', '99999')
+    min_liquidity = request.GET.get('min_liquidity', '0')
+    max_liquidity = request.GET.get('max_liquidity', '100')
+    min_profit_percent = request.GET.get('min_profit_percent', '0')
+    max_profit_percent = request.GET.get('max_profit_percent', '100')
+    sort_by = request.GET.get('sort_by', 'price')
+
+    # Здесь в будущем будет логика фильтрации данных
+    filtered_items = items_data  # Пока отображаем все
+
+    # Статистика для страницы
+    market_stats = {
+        'total_items': 28699,
+        'showing_items': len(filtered_items),
+        'avg_price': '17,13 руб.',
+        'avg_profit': '2,34%',
+        'total_volume': '175,223',
+        'price_change': '+2.3%',
+        'volume_change': '+15.7%',
+        'liquidity_change': '-3.2%'
+    }
+
+    context = {
+        'user': request.user,
+        'steam_data': steam_data,
+        'items_data': filtered_items,
+        'market_stats': market_stats,
+        'filters': {
+            'min_price': min_price,
+            'max_price': max_price,
+            'min_profit': min_profit,
+            'max_profit': max_profit,
+            'min_liquidity': min_liquidity,
+            'max_liquidity': max_liquidity,
+            'min_profit_percent': min_profit_percent,
+            'max_profit_percent': max_profit_percent,
+            'sort_by': sort_by,
+        },
+        'page_title': 'CS Market Analytics - Сравнение цен',
+    }
+
+    return render(request, 'steam_auth/comparison_price.html', context)
+
+
+@require_GET
+def get_market_data_api(request):
+    """
+    API endpoint для получения рыночных данных (заглушка для парсера)
+    В будущем здесь будет реальное подключение к парсеру
+    """
+    try:
+        # Параметры запроса
+        limit = int(request.GET.get('limit', 50))
+        offset = int(request.GET.get('offset', 0))
+        game = request.GET.get('game', '730')  # CS:GO
+
+        # Заглушка данных
+        items_data = [
+            {
+                "name": "Кейс «Киловатт»",
+                "hash_name": "Kilowatt Case",
+                "price": {
+                    "lowest_price": "24,76 руб.",
+                    "median_price": "24,97 руб.",
+                    "volume": "134,692"
+                },
+                "image": "https://steamcommunity-a.akamaihd.net/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bj35VTqVBP4io_frnEVvqf_a6VoIfGSXz7Hlbwg57QwSS_mxhl15jiGyN37c3_GZw91W8BwRflK7EfKsa2sfw",
+                "url": "https://steamcommunity.com/market/listings/730/Kilowatt%20Case",
+                "profit": "0,21 руб.",
+                "profit_percent": "0.85%",
+                "liquidity": "92%"
+            },
+            {
+                "name": "Капсула с наклейками кандидатов BLAST.tv Paris Major 2023",
+                "hash_name": "Paris 2023 Contenders Sticker Capsule",
+                "price": {
+                    "lowest_price": "9,50 руб.",
+                    "median_price": "9,67 руб.",
+                    "volume": "40,531"
+                },
+                "image": "https://steamcommunity-a.akamaihd.net/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bjn_lDkShjjoYbh_ilk__O8Ybc_cKLAMWSfz_pzvuVsXTr9kRki5m_Uwtz7cXKWO1ApCcByRLEO50LtkoWyP7_k4Afdi99GniT4jzQJsHjtsZcvVQ",
+                "url": "https://steamcommunity.com/market/listings/730/Paris%202023%20Contenders%20Sticker%20Capsule",
+                "profit": "0,17 руб.",
+                "profit_percent": "1.79%",
+                "liquidity": "85%"
+            }
+        ]
+
+        # Фильтрация по параметрам запроса
+        min_price = float(request.GET.get('min_price', 0))
+        max_price = float(request.GET.get('max_price', 99999))
+
+        filtered_items = []
+        for item in items_data:
+            # Парсим цену (упрощенно)
+            price_str = item['price']['lowest_price'].replace(' руб.', '').replace(',', '.')
+            try:
+                price = float(price_str)
+                if min_price <= price <= max_price:
+                    filtered_items.append(item)
+            except ValueError:
+                pass
+
+        response_data = {
+            'success': True,
+            'count': len(filtered_items),
+            'total': 28699,  # Общее количество предметов в базе
+            'items': filtered_items[offset:offset + limit],
+            'pagination': {
+                'limit': limit,
+                'offset': offset,
+                'next_offset': offset + limit if offset + limit < len(filtered_items) else None
+            }
+        }
+
+        return JsonResponse(response_data)
+
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e),
+            'items': []
+        }, status=500)
+
+
 def logout_view(request):
     logout(request)
     if 'steam_data' in request.session:

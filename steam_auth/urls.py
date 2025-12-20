@@ -9,4 +9,6 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('api/inventory/', views.get_steam_inventory, name='api_inventory'),
     path('profile/', views.profile_view, name='profile'),
+    path('compare/', views.compare_prices_view, name='comparison_price'),
+    path('api/market-data/', views.get_market_data_api, name='market_data_api'),
 ]
