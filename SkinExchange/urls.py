@@ -27,4 +27,5 @@ urlpatterns = [
     path('', include('steam_auth.urls')),
     path('', views.home_view, name='home'),
     path('profile/', views.profile_view, name='profile'),
+    path('api/inventory/', views.get_steam_inventory, name='api_inventory'),
 ]

@@ -297,16 +297,15 @@ def fetch_steam_inventory(steam_id, appid, contextid='2'):
     """
     try:
         # Формируем URL для нового Steam API
-        # Правильный формат: https://steamcommunity.com/inventory/{steam_id}/{appid}/{contextid}
-        url = f"https://steamcommunity.com/inventory/76561198080203313/{appid}/{contextid}"
+        url = f"https://steamcommunity.com/inventory/{steam_id}/{appid}/{contextid}"
 
-        # Простые параметры без 'trading'
+        # Параметры запроса
         params = {
             'l': 'russian',  # Язык
             'count': 100,  # Количество предметов
         }
 
-        # Более простые заголовки
+        # Заголовки
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
@@ -314,36 +313,35 @@ def fetch_steam_inventory(steam_id, appid, contextid='2'):
         response = requests.get(url, params=params, headers=headers, timeout=20)
 
         if response.status_code != 200:
-            # Если ошибка 403, пробуем без параметров
-            if response.status_code == 403:
-                response = requests.get(url, headers=headers, timeout=20)
-
-            if response.status_code != 200:
-                return []
+            return []
 
         # Парсим JSON
-        try:
-            data = response.json()
-        except json.JSONDecodeError:
-            return []
+        data = response.json()
 
         # Проверяем успешность запроса
         if not data.get('success'):
             return []
 
         assets = data.get('assets', [])
-        descriptions = {desc['classid']: desc for desc in data.get('descriptions', [])}
+        descriptions = data.get('descriptions', [])
 
         if not assets or not descriptions:
             return []
+
+        # Создаем словарь описаний по classid
+        desc_dict = {}
+        for desc in descriptions:
+            classid = desc.get('classid')
+            if classid:
+                desc_dict[classid] = desc
 
         # Обрабатываем предметы
         items = []
         for asset in assets:
             classid = asset.get('classid')
 
-            if classid in descriptions:
-                desc = descriptions[classid]
+            if classid in desc_dict:
+                desc = desc_dict[classid]
 
                 item = {
                     'assetid': asset.get('assetid'),
@@ -363,6 +361,10 @@ def fetch_steam_inventory(steam_id, appid, contextid='2'):
                     'icon_url_large': desc.get('icon_url_large', ''),
                     'tags': desc.get('tags', []),
                 }
+
+                # Добавляем информацию о цвете для CS:GO
+                if appid == '730' and 'fraudwarnings' in desc:
+                    item['fraudwarnings'] = desc['fraudwarnings']
 
                 items.append(item)
 

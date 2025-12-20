@@ -61,3 +61,27 @@ def create_steam_profile(sender, instance, created, **kwargs):
 def save_steam_profile(sender, instance, **kwargs):
     if hasattr(instance, 'steam_profile'):
         instance.steam_profile.save()
+
+
+# models.py (добавьте в steam_auth/models.py)
+from django.db import models
+from django.contrib.auth.models import User
+import json
+
+
+class SteamInventoryCache(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='inventory_cache')
+    steam_id = models.CharField(max_length=20)
+    appid = models.CharField(max_length=10)
+    contextid = models.CharField(max_length=10)
+    items_data = models.JSONField()  # JSON с данными предметов
+    last_updated = models.DateTimeField(auto_now=True)
+    total_items = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ['user', 'steam_id', 'appid', 'contextid']
+        verbose_name = 'Кэш инвентаря Steam'
+        verbose_name_plural = 'Кэши инвентаря Steam'
+
+    def __str__(self):
+        return f"{self.user.username} - {self.appid} ({self.total_items} items)"

@@ -708,7 +708,6 @@
             {% endif %}
         </footer>
     </div>
-
     <script>
         // Токен CSRF для Django
         function getCookie(name) {
@@ -728,6 +727,33 @@
 
         const csrftoken = getCookie('csrftoken');
 
+        // Функция для получения названия игры по appid
+        function getGameName(appid) {
+            const games = {
+                '730': 'Counter-Strike 2',
+                '570': 'Dota 2',
+                '440': 'Team Fortress 2',
+                '252490': 'Rust',
+                '753': 'Steam Карточки',
+                '578080': 'PUBG',
+                '218620': 'PAYDAY 2',
+                '550': 'Left 4 Dead 2',
+                '4000': 'Garry\'s Mod',
+                '232090': 'Killing Floor'
+            };
+            return games[appid] || `Игра ${appid}`;
+        }
+
+        // Функция для создания URL изображения Steam
+        function getSteamImageUrl(icon_url, icon_url_large) {
+            if (icon_url_large && icon_url_large !== '') {
+                return `https://steamcommunity-a.akamaihd.net/economy/image/${icon_url_large}`;
+            } else if (icon_url && icon_url !== '') {
+                return `https://steamcommunity-a.akamaihd.net/economy/image/${icon_url}`;
+            }
+            return 'https://via.placeholder.com/64x64/2a2f3d/8a94a6?text=?';
+        }
+
         // Функция для отображения инвентаря
         function renderInventory(items) {
             const container = document.getElementById('inventoryItems');
@@ -737,31 +763,52 @@
 
             // Отображаем предметы или сообщение об пустом инвентаре
             if (items && items.length > 0) {
+                // Сортируем предметы по названию
+                items.sort((a, b) => {
+                    const nameA = (a.name || a.market_hash_name || '').toLowerCase();
+                    const nameB = (b.name || b.market_hash_name || '').toLowerCase();
+                    return nameA.localeCompare(nameB);
+                });
+
                 items.forEach(item => {
                     const itemCard = document.createElement('div');
                     itemCard.className = 'inventory-item-card';
 
+                    // Получаем данные предмета
+                    const itemName = item.name || item.market_hash_name || 'Без названия';
+                    const gameName = getGameName(item.appid);
+                    const imageUrl = getSteamImageUrl(item.icon_url, item.icon_url_large);
+                    const isTradable = item.tradable === true || item.tradable === 1;
+                    const isMarketable = item.marketable === true || item.marketable === 1;
+                    const amount = item.amount || 1;
+
                     // Формируем URL для Steam маркета
-                    const marketUrl = `https://steamcommunity.com/market/listings/${item.appid}/${encodeURIComponent(item.market_hash_name)}`;
+                    let marketUrl = '#';
+                    if (item.market_hash_name) {
+                        marketUrl = `https://steamcommunity.com/market/listings/${item.appid}/${encodeURIComponent(item.market_hash_name)}`;
+                    } else if (item.name) {
+                        marketUrl = `https://steamcommunity.com/market/search?q=${encodeURIComponent(item.name)}`;
+                    }
 
                     itemCard.innerHTML = `
                         <div class="item-header">
-                            <img src="${item.icon_url || item.icon_url_large || 'https://via.placeholder.com/64x64/2a2f3d/8a94a6?text=?'}"
-                                 alt="${item.name || item.market_hash_name}"
+                            <img src="${imageUrl}"
+                                 alt="${itemName}"
                                  class="item-image"
-                                 onerror="this.src='https://via.placeholder.com/64x64/2a2f3d/8a94a6?text=?'">
+                                 onerror="this.src='https://via.placeholder.com/64x64/2a2f3d/8a94a6?text=?'"
+                                 loading="lazy">
                             <div>
-                                <h4 class="item-name" title="${item.name || item.market_hash_name}">
-                                    ${item.name || item.market_hash_name}
+                                <h4 class="item-name" title="${itemName}">
+                                    ${itemName.length > 30 ? itemName.substring(0, 27) + '...' : itemName}
                                 </h4>
                                 <div class="item-game">
-                                    ${getGameName(item.appid)} • ${item.amount || 1} шт.
+                                    ${gameName} • ${amount} шт.
                                 </div>
-                                ${item.tradable !== undefined ? `
-                                    <div class="item-game" style="font-size: 11px; margin-top: 2px;">
-                                        ${item.tradable ? '🟢 Можно обменять' : '🔴 Нельзя обменять'}
-                                    </div>
-                                ` : ''}
+                                <div class="item-game" style="font-size: 11px; margin-top: 2px;">
+                                    ${isTradable ? '🟢 Можно обменять' : '🔴 Нельзя обменять'} •
+                                    ${isMarketable ? '💰 Можно продать' : '🔒 Нельзя продать'}
+                                </div>
+                                ${item.type ? `<div class="item-game" style="font-size: 10px; margin-top: 2px; color: #8a94a6;">${item.type}</div>` : ''}
                             </div>
                         </div>
                         <div class="item-actions">
@@ -772,7 +819,7 @@
                                 📈 Маркет
                             </a>
                             <button class="btn-small btn-sell analyze-btn"
-                                    data-item='${JSON.stringify(item)}'
+                                    data-item='${JSON.stringify(item).replace(/'/g, "\\'")}'
                                     title="Проанализировать стоимость">
                                 📊 Анализ
                             </button>
@@ -782,69 +829,81 @@
                     container.appendChild(itemCard);
                 });
 
-                // Добавляем обработчики для кнопок анализа
-                document.querySelectorAll('.analyze-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const itemData = JSON.parse(this.getAttribute('data-item'));
-                        analyzeItem(itemData);
-                    });
-                });
+                // Обновляем статистику в профиле
+                updateProfileStats(items);
+
             } else {
                 container.innerHTML = `
                     <div class="empty-state">
                         <img src="https://cdn.jsdelivr.net/npm/twemoji@latest/assets/svg/1f6e0.svg" alt="Инструменты">
                         <h3>Инвентарь пуст</h3>
                         <p>В выбранной игре нет предметов в инвентаре</p>
+                        <p style="margin-top: 10px; font-size: 14px;">
+                            <a href="https://store.steampowered.com/" target="_blank" style="color: #4f7bff;">
+                                🛒 Перейти в Steam Store
+                            </a>
+                        </p>
                     </div>
                 `;
             }
         }
 
-        // Функция для получения названия игры по appid
-        function getGameName(appid) {
-            const games = {
-                '730': 'CS2',
-                '570': 'Dota 2',
-                '440': 'TF2',
-                '252490': 'Rust',
-                '753': 'Steam',
-                '578080': 'PUBG',
-                '730': 'CS:GO',
-                '730': 'Counter-Strike 2'
-            };
-            return games[appid] || `Игра ${appid}`;
+        // Функция для обновления статистики профиля
+        function updateProfileStats(items) {
+            // Обновляем количество предметов
+            const itemsCountElement = document.querySelector('.stat-card:nth-child(1) .stat-value');
+            if (itemsCountElement) {
+                itemsCountElement.textContent = items.length;
+            }
+
+            // Считаем количество уникальных игр
+            const uniqueGames = [...new Set(items.map(item => item.appid))];
+            const gamesCountElement = document.querySelector('.stat-card:nth-child(2) .stat-value');
+            if (gamesCountElement) {
+                gamesCountElement.textContent = uniqueGames.length;
+            }
+
+            // Считаем количество торговых предметов
+            const tradableItems = items.filter(item => item.tradable === true || item.tradable === 1).length;
+            const tradesElement = document.querySelector('.stat-card:nth-child(3) .stat-value');
+            if (tradesElement) {
+                tradesElement.textContent = tradableItems;
+            }
         }
 
         // Функция для анализа предмета
-        function analyzeItem(item) {
-            alert(`Анализ предмета:\n\nНазвание: ${item.name || item.market_hash_name}\nИгра: ${getGameName(item.appid)}\n\nФункция анализа цены будет добавлена позже.`);
+        function analyzeItem(itemData) {
+            const itemName = itemData.name || itemData.market_hash_name || 'Без названия';
+            const gameName = getGameName(itemData.appid);
+            const tradableStatus = itemData.tradable ? 'Можно обменять' : 'Нельзя обменять';
+            const marketableStatus = itemData.marketable ? 'Можно продать' : 'Нельзя продать';
+
+            alert(`📊 Анализ предмета:\n\n` +
+                  `🎮 Игра: ${gameName}\n` +
+                  `🏷️ Название: ${itemName}\n` +
+                  `📦 Количество: ${itemData.amount || 1}\n` +
+                  `🔄 Торговля: ${tradableStatus}\n` +
+                  `💰 Продажа: ${marketableStatus}\n` +
+                  `🎨 Тип: ${itemData.type || 'Не указан'}\n\n` +
+                  `Функция анализа цены будет добавлена позже.`);
         }
 
         // Функция для получения реального инвентаря Steam API
         async function loadSteamInventory(gameId = 'all') {
             try {
-                console.log(`🎮 ЗАПРОС ИНВЕНТАРЯ STEAM (JSON API)`);
-                console.log(`   Время: ${new Date().toLocaleString()}`);
-                console.log(`   Steam ID: {{ steam_data.steam_id }}`);
-                console.log(`   Игра: ${gameId === 'all' ? 'Все игры' : `AppID: ${gameId}`}`);
-
                 const loadingIndicator = document.getElementById('loadingIndicator');
                 if (loadingIndicator) {
                     loadingIndicator.innerHTML = `
                         <div class="loading-spinner"></div>
                         <p>Загрузка инвентаря из Steam...</p>
                         <p style="font-size: 12px; margin-top: 10px; color: #8a94a6;">
-                            Используем Steam JSON API...
+                            Это может занять несколько секунд
                         </p>
                     `;
                 }
 
                 // Формируем URL запроса
-                const apiUrl = `/auth/api/inventory/?appid=${gameId}`;
-                console.log(`   API URL: ${apiUrl}`);
-                console.log(`   Отправка запроса...`);
-
-                const startTime = Date.now();
+                const apiUrl = `/api/inventory/?appid=${gameId}`;
 
                 // Запрос к нашему API
                 const response = await fetch(apiUrl, {
@@ -855,79 +914,36 @@
                     }
                 });
 
-                const endTime = Date.now();
-                const duration = (endTime - startTime) / 1000;
-
-                console.log(`   Время выполнения: ${duration.toFixed(2)} сек`);
-                console.log(`   Статус: ${response.status}`);
-
                 if (!response.ok) {
                     throw new Error(`HTTP ошибка: ${response.status}`);
                 }
 
                 const data = await response.json();
-                console.log(`   Ответ получен:`);
-                console.log(`   - success: ${data.success}`);
-                console.log(`   - api_used: ${data.api_used || 'unknown'}`);
-                console.log(`   - total_count: ${data.total_count}`);
-                console.log(`   - message: ${data.message}`);
-
-                if (data.api_url) {
-                    console.log(`   - api_url: ${data.api_url}`);
-                }
 
                 if (data.error) {
-                    console.error(`   ❌ Ошибка: ${data.error}`);
                     throw new Error(data.error);
                 }
 
                 if (data.items && data.items.length > 0) {
-                    console.log(`   ✅ Успешно загружено: ${data.items.length} предметов`);
-
-                    // Логируем первые 3 предмета для отладки
-                    data.items.slice(0, 3).forEach((item, index) => {
-                        console.log(`   Пример ${index + 1}: ${item.name || 'Без названия'} [${item.tradable ? '🟢' : '🔴'}]`);
-                    });
-
-                    // Обновляем статистику
-                    updateStats(data.items.length, data.total_count);
-
                     // Отображаем инвентарь
                     renderInventory(data.items);
-
                 } else {
-                    console.log(`   ℹ️ Инвентарь пуст или недоступен`);
-                    showEmptyInventoryMessage(data);
+                    showEmptyInventoryMessage();
                 }
 
             } catch (error) {
-                console.error(`   ❌ Ошибка загрузки:`, error);
                 showErrorMessage(error);
             }
         }
 
         // Функция для отображения сообщения о пустом инвентаре
-        function showEmptyInventoryMessage(data) {
+        function showEmptyInventoryMessage() {
             const container = document.getElementById('inventoryItems');
-
-            let message = `
+            container.innerHTML = `
                 <div class="empty-state">
                     <img src="https://cdn.jsdelivr.net/npm/twemoji@latest/assets/svg/1f9ca.svg" alt="Пусто">
-                    <h3>Инвентарь пуст или недоступен</h3>
-                    <p>Не удалось загрузить предметы из Steam инвентаря</p>
-            `;
-
-            if (data.api_url) {
-                message += `
-                    <p style="margin-top: 15px; font-size: 14px;">
-                        <a href="${data.api_url}" target="_blank" style="color: #4f7bff;">
-                            🔗 Попробовать открыть напрямую в Steam
-                        </a>
-                    </p>
-                `;
-            }
-
-            message += `
+                    <h3>Инвентарь пуст</h3>
+                    <p>В вашем Steam инвентаре нет предметов для выбранной игры</p>
                     <div style="margin-top: 20px; font-size: 14px; color: #8a94a6; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto;">
                         <p><strong>Возможные причины:</strong></p>
                         <ul style="margin: 10px 0; padding-left: 20px;">
@@ -935,27 +951,14 @@
                             <li>Настройки приватности Steam ограничивают доступ к инвентарю</li>
                             <li>Steam API временно недоступен</li>
                         </ul>
-
-                        <p style="margin-top: 15px;"><strong>Проверьте настройки приватности Steam:</strong></p>
-                        <ol style="margin: 10px 0; padding-left: 20px;">
-                            <li>Зайдите в настройки Steam</li>
-                            <li>Перейдите в "Конфиденциальность"</li>
-                            <li>Установите "Публичный" для "Профиль моего инвентаря"</li>
-                        </ol>
                     </div>
-
-                    <p style="margin-top: 20px;">
-                        <a href="https://steamcommunity.com/profiles/{{ steam_data.steam_id }}/edit/settings"
-                           target="_blank"
-                           class="btn btn-login"
-                           style="padding: 10px 20px; font-size: 14px;">
-                            ⚙️ Проверить настройки приватности Steam
+                    <p style="font-size: 14px; margin-top: 10px;">
+                        <a href="https://store.steampowered.com/" target="_blank" style="color: #4f7bff;">
+                            Перейти в Steam Store
                         </a>
                     </p>
                 </div>
             `;
-
-            container.innerHTML = message;
         }
 
         // Функция для отображения ошибки
@@ -963,8 +966,10 @@
             const container = document.getElementById('inventoryItems');
 
             let errorMessage = error.message;
-            if (error.message.includes('private') || error.message.includes('приват')) {
-                errorMessage = 'Инвентарь приватный. Измените настройки приватности Steam.';
+            if (error.message.includes('Failed to fetch')) {
+                errorMessage = 'Ошибка сети. Проверьте подключение к интернету.';
+            } else if (error.message.includes('Steam ID не найден')) {
+                errorMessage = 'Сессия устарела. Пожалуйста, войдите заново.';
             }
 
             container.innerHTML = `
@@ -972,22 +977,83 @@
                     <img src="https://cdn.jsdelivr.net/npm/twemoji@latest/assets/svg/26a0.svg" alt="Ошибка">
                     <h3>Ошибка загрузки</h3>
                     <p>${errorMessage}</p>
-
                     <div style="margin-top: 20px;">
                         <button onclick="loadSteamInventory('all')" class="btn btn-login">
                             🔄 Попробовать снова
                         </button>
-
-                        <a href="https://steamcommunity.com/profiles/{{ steam_data.steam_id }}/inventory/"
-                           target="_blank"
-                           class="btn btn-view"
-                           style="margin-left: 10px;">
-                            🌐 Открыть в Steam
-                        </a>
                     </div>
                 </div>
             `;
         }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Загружаем инвентарь по умолчанию (CS:GO)
+            loadSteamInventory('730');
+
+            // Назначаем обработчики для вкладок игр
+            const gameTabs = document.querySelectorAll('.game-tab');
+            gameTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Убираем активный класс у всех вкладок
+                    gameTabs.forEach(t => t.classList.remove('active'));
+
+                    // Добавляем активный класс текущей вкладке
+                    this.classList.add('active');
+
+                    // Получаем ID игры из data-атрибута
+                    const gameId = this.getAttribute('data-game');
+
+                    // Загружаем инвентарь для выбранной игры
+                    if (gameId === 'all') {
+                        // Для "Все игры" загружаем CS:GO как основную
+                        loadSteamInventory('730');
+                    } else {
+                        loadSteamInventory(gameId);
+                    }
+                });
+            });
+
+            // Кнопка обновления инвентаря
+            const refreshBtn = document.createElement('button');
+            refreshBtn.innerHTML = '🔄 Обновить инвентарь';
+            refreshBtn.className = 'btn btn-login';
+            refreshBtn.style.marginLeft = '20px';
+            refreshBtn.style.padding = '8px 16px';
+            refreshBtn.style.fontSize = '14px';
+
+            refreshBtn.addEventListener('click', function() {
+                const activeTab = document.querySelector('.game-tab.active');
+                const gameId = activeTab ? activeTab.getAttribute('data-game') : '730';
+                loadSteamInventory(gameId === 'all' ? '730' : gameId);
+
+                // Анимация кнопки
+                this.innerHTML = '⏳ Обновление...';
+                this.disabled = true;
+                setTimeout(() => {
+                    this.innerHTML = '🔄 Обновить инвентарь';
+                    this.disabled = false;
+                }, 3000);
+            });
+
+            // Добавляем кнопку обновления рядом с заголовком
+            const inventoryTitle = document.querySelector('.inventory-section .section-title');
+            if (inventoryTitle) {
+                inventoryTitle.appendChild(refreshBtn);
+            }
+
+            // Обработчики для кнопок анализа (добавляем динамически)
+            document.addEventListener('click', function(event) {
+                if (event.target.classList.contains('analyze-btn')) {
+                    try {
+                        const itemData = JSON.parse(event.target.getAttribute('data-item'));
+                        analyzeItem(itemData);
+                    } catch (error) {
+                        console.error('Ошибка анализа предмета:', error);
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>
