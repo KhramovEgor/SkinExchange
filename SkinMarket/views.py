@@ -1,16 +1,69 @@
 import re
 from urllib.parse import urlencode
 
-import requests
-import json
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
+from django.template.defaulttags import register
 from django.urls import reverse
 from django.views.decorators.http import require_GET
+
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
+
+
+@register.filter
+def format_price(value):
+    if isinstance(value, (int, float)):
+        return f"${value:.2f}"
+    return value
+
+
+@register.filter
+def format_change(value):
+    if isinstance(value, (int, float)):
+        sign = '+' if value >= 0 else ''
+        return f"{sign}{value:.1f}%"
+    return value
+
+
+@register.filter
+def get_change_class(value):
+    if isinstance(value, (int, float)):
+        return 'positive' if value >= 0 else 'negative'
+    return ''
+
+
+@register.filter
+def get_wear_display_name(wear):
+    wear_names = {
+        'factory-new': 'Примо с завода',
+        'minimal-wear': 'Минимальный износ',
+        'field-tested': 'Полевые испытания',
+        'well-worn': 'Сильно изношено',
+        'battle-scarred': 'С боевыми следами'
+    }
+    return wear_names.get(wear, wear)
+
+
+@register.filter
+def create_rating_stars(rating):
+    full_stars = int(rating)
+    has_half_star = rating - full_stars >= 0.5
+    empty_stars = 5 - full_stars - (1 if has_half_star else 0)
+
+    stars = ''
+    for _ in range(full_stars):
+        stars += '<i class="fas fa-star star"></i>'
+    if has_half_star:
+        stars += '<i class="fas fa-star-half-alt star"></i>'
+    for _ in range(empty_stars):
+        stars += '<i class="far fa-star star empty"></i>'
+
+    return stars
 
 
 def home_view(request):
@@ -30,11 +83,20 @@ def home_view(request):
         }
     ]
 
+    # Данные для популярных скинов (заглушки)
+    popular_skins = [
+        {"change": "21.13", "weapon": "P2000", "name": "Императорский дракон FN", "price": "$49.72"},
+        {"change": "17.01", "weapon": "StatTrak™ Фальшион", "name": "Ночь FT", "price": "$184.66"},
+        {"change": "18.29", "weapon": "AWP", "name": "Элитное снаряжение FT", "price": "$40.91"},
+        {"change": "16.39", "weapon": "Автомат «Галиль»", "name": "ОСТОРОЖНО! MW", "price": "$85.23"},
+    ]
+
     steam_data = request.session.get('steam_data', {})
 
     context = {
         'user': request.user,
         'items_data': items_data,
+        'popular_skins': popular_skins,
         'steam_data': steam_data,
         'page_title': 'CS Market Analytics - Главная',
         'market_stats': {
@@ -46,7 +108,7 @@ def home_view(request):
         }
     }
 
-    return render(request, 'steam_auth/home.html', context)
+    return render(request, 'home.html', context)
 
 
 def steam_login(request):
@@ -61,7 +123,7 @@ def steam_login(request):
         'openid.ns': 'http://specs.openid.net/auth/2.0',
         'openid.mode': 'checkid_setup',
         'openid.return_to': request.build_absolute_uri(
-            reverse('steam_auth:callback')
+            reverse('callback')
         ),
         'openid.realm': request.build_absolute_uri('/'),
         'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
@@ -128,7 +190,7 @@ def steam_callback(request):
             if steam_data:
                 update_user_profile(user, steam_data)
 
-            login(request, user, backend='steam_auth.backends.SteamBackend')
+            login(request, user, backend='SkinMarket.backends.SteamBackend')
 
             request.session['steam_data'] = {
                 'steam_id': steam_id,
@@ -145,7 +207,7 @@ def steam_callback(request):
 
             messages.success(request, f"Успешный вход! Добро пожаловать!")
 
-            next_url = request.session.pop('login_next_url', 'steam_auth:profile')
+            next_url = request.session.pop('login_next_url', 'profile')
             return redirect(next_url)
         else:
             messages.error(request, "Ошибка создания пользователя!")
@@ -245,31 +307,27 @@ def get_steam_inventory(request):
     API для получения реального инвентаря Steam пользователя
     """
     try:
-        # Получаем Steam ID из сессии
-        steam_id = "76561198080203313"
+        # Получаем Steam ID из сессии или из данных пользователя
+        steam_data = request.session.get('steam_data', {})
+        steam_id = steam_data.get('steam_id')
+
+        if not steam_id:
+            # Пытаемся получить Steam ID из модели пользователя
+            from .models import SteamUser
+            steam_user = SteamUser.objects.filter(user=request.user).first()
+            if steam_user:
+                steam_id = steam_user.steam_id
+
         if not steam_id:
             return JsonResponse({
-                'error': 'Steam ID не найден в сессии. Пожалуйста, войдите через Steam.',
+                'error': 'Steam ID не найден. Пожалуйста, войдите заново.',
                 'items': []
             }, status=400)
 
         # Получаем appid из параметров запроса
         appid = request.GET.get('appid', '730')  # По умолчанию CS:GO
 
-        # Карта игр и их contextid
-        games = {
-            '730': {'name': 'Counter-Strike 2', 'contextid': '2'},
-            '570': {'name': 'Dota 2', 'contextid': '2'},
-            '440': {'name': 'Team Fortress 2', 'contextid': '2'},
-            '252490': {'name': 'Rust', 'contextid': '2'},
-            '753': {'name': 'Steam', 'contextid': '6'},  # Карточки Steam
-        }
-
-        items = []
-
-        # Загружаем инвентарь для конкретной игры
-        game_info = games.get(appid, {'name': f'Game {appid}', 'contextid': '2'})
-        items = fetch_steam_inventory(steam_id, appid, game_info['contextid'])
+        items = fetch_steam_inventory(steam_id, appid, '2')
 
         # Формируем итоговый ответ
         result = {
@@ -285,7 +343,7 @@ def get_steam_inventory(request):
 
     except Exception as e:
         return JsonResponse({
-            'error': f'Внутренняя ошибка сервера',
+            'error': f'Внутренняя ошибка сервера: {str(e)}',
             'items': []
         }, status=500)
 
@@ -379,12 +437,48 @@ def profile_view(request):
     """Страница профиля пользователя"""
     steam_data = request.session.get('steam_data', {})
 
+    # Если Steam ID не сохранился в сессии, получаем его из данных пользователя
+    if not steam_data.get('steam_id'):
+        try:
+            from .models import SteamUser
+            steam_user = SteamUser.objects.filter(user=request.user).first()
+            if steam_user:
+                steam_data['steam_id'] = steam_user.steam_id
+        except Exception:
+            pass
+
+    # Получаем дополнительную информацию о профиле Steam через API
+    if steam_data.get('steam_id'):
+        try:
+            api_key = getattr(settings, 'STEAM_API_KEY', '')
+            if api_key:
+                # Получаем детальную информацию о профиле
+                profile_info = get_steam_user_info(steam_data['steam_id'], api_key)
+                if profile_info:
+                    # Обновляем steam_data новой информацией
+                    steam_data.update(profile_info)
+
+                    # Сохраняем обновленные данные в сессии
+                    request.session['steam_data'] = steam_data
+        except Exception as e:
+            print(f"Ошибка получения данных Steam: {e}")
+
     user_stats = {
         'items_count': 0,
-        'games_count': 0,
         'trades_count': 0,
-        'inventory_value': 'Загрузка...'
+        'last_update': 'Сегодня',
+        'inventory_value': '$0'
     }
+
+    # Пытаемся получить данные об инвентаре
+    try:
+        steam_id = steam_data.get('steam_id', steam_data['steam_id'])
+        inventory_items = fetch_steam_inventory(steam_id, '730', '2')
+        if inventory_items:
+            user_stats['items_count'] = len(inventory_items)
+            user_stats['trades_count'] = len([i for i in inventory_items if i.get('tradable')])
+    except Exception:
+        pass
 
     context = {
         'user': request.user,
@@ -393,7 +487,7 @@ def profile_view(request):
         'page_title': f'Профиль {steam_data.get("persona_name", request.user.username)}',
     }
 
-    return render(request, 'steam_auth/profile.html', context)
+    return render(request, 'profile.html', context)
 
 
 @login_required
@@ -496,7 +590,7 @@ def compare_prices_view(request):
         'page_title': 'CS Market Analytics - Сравнение цен',
     }
 
-    return render(request, 'steam_auth/comparison_price.html', context)
+    return render(request, 'comparison_price.html', context)
 
 
 @require_GET
@@ -580,6 +674,193 @@ def get_market_data_api(request):
         }, status=500)
 
 
+# views.py
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+import requests
+from django.conf import settings
+
+
+def skin_detail_view(request, skin_name, wear=None):
+    """
+    View для отображения детальной страницы скина
+    """
+    # Получаем данные о скине из базы данных или API
+    # В реальном приложении здесь будет запрос к базе данных
+
+    # Пример данных для тестирования
+    context = {
+        'skin': {
+            'name': 'МР9 | Hydra',
+            'weapon': 'MP9',
+            'collection': 'Hydra',
+            'rarity': 'Засекреченное',
+            'description': 'Производимый в Швейцарии передовой пистолет-пулемёт МР9 – это эргономичное полимерное оружие, используемое частными охранными структурами по всему миру. Он был окрашен в гидравлическую тематику с использованием металлических красок и аэрографии. Коллекция «Гидра».',
+            'extended_description': 'Этот уникальный дизайн был создан талантливым художником и является частью ограниченной серии. Скины коллекции «Гидра» известны своей детализацией и яркими цветами, что делает их популярными среди коллекционеров.',
+            'image_url': 'https://steamcommunity-a.akamaihd.net/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXU5A1PIYQh5hlcX0nvUOGsx8DdQBJjIAVHubSaIAlp1fb3ejx95-GJlY6OhPLLNqnVkWkJ6cQn2rCRoIql2A3i-0E5ZjqhJ9ScI1BrYlzW81fswe650Z-8u8vPnyBk7nMi5CrD30vgUxMdi3oYJ7WJGAvjY9fM-FS4FA/360fx360f',
+            'wears': {
+                'factory-new': {
+                    'price': 118.51,
+                    'change': 2.3,
+                    'available': True
+                },
+                'minimal-wear': {
+                    'price': 30.44,
+                    'change': -1.2,
+                    'available': True
+                },
+                'field-tested': {
+                    'price': 11.85,
+                    'change': 0.8,
+                    'available': True
+                },
+                'well-worn': {
+                    'price': 7.32,
+                    'change': 3.1,
+                    'available': True
+                },
+                'battle-scarred': {
+                    'price': 5.81,
+                    'change': -0.5,
+                    'available': True
+                }
+            },
+            'rating': 4.5,
+            'votes': 872,
+            'weekly_change': 50.63,
+            'weekly_percent': 74.6,
+            'monthly_change': 69.50,
+            'monthly_percent': 141.8,
+            'current_price': 118.51
+        },
+        'price_history': {
+            'current': 118.51,
+            'week_low': 60.63,
+            'week_high': 76.05,
+            'month_low': 38.02,
+            'month_high': 60.63,
+            'three_month_low': 29.47,
+            'three_month_high': 48.52,
+            'all_time_low': 9.58,
+            'all_time_high': 124.83
+        },
+        'selected_wear': wear if wear else 'factory-new'
+    }
+
+    return render(request, 'skin_detail.html', context)
+
+
+@require_GET
+def get_skin_data_api(request, skin_name):
+    """
+    API для получения данных о скине
+    """
+    # Здесь будет логика получения данных из базы или внешнего API
+    # Пока возвращаем тестовые данные
+
+    data = {
+        'name': skin_name,
+        'weapon': 'MP9',
+        'collection': 'Hydra',
+        'rarity': 'Classified',
+        'description': 'Detailed description of the skin...',
+        'wears': {
+            'factory-new': {'price': 118.51, 'change': 2.3},
+            'minimal-wear': {'price': 30.44, 'change': -1.2},
+            'field-tested': {'price': 11.85, 'change': 0.8},
+            'well-worn': {'price': 7.32, 'change': 3.1},
+            'battle-scarred': {'price': 5.81, 'change': -0.5}
+        }
+    }
+
+    return JsonResponse(data)
+
+
+@require_GET
+def get_skin_prices_api(request, skin_name):
+    """
+    API для получения цен скина по разным платформам
+    """
+    wear = request.GET.get('wear', 'factory-new')
+
+    # Тестовые данные
+    data = {
+        'skin': skin_name,
+        'wear': wear,
+        'prices': [
+            {
+                'platform': 'Steam Market',
+                'icon': 'https://steamcommunity.com/favicon.ico',
+                'price': 118.51,
+                'date': 'Today, 15:42',
+                'wear': 'FN'
+            },
+            {
+                'platform': 'Skinport',
+                'icon': 'https://skinport.com/favicon.ico',
+                'price': 115.20,
+                'date': 'Today, 14:30',
+                'wear': 'FN'
+            },
+            {
+                'platform': 'DMarket',
+                'icon': 'https://dmarket.com/favicon.ico',
+                'price': 116.85,
+                'date': 'Today, 13:15',
+                'wear': 'FN'
+            }
+        ]
+    }
+
+    return JsonResponse(data)
+
+
+@require_GET
+def get_skin_history_api(request, skin_name):
+    """
+    API для получения истории цен скина
+    """
+    period = request.GET.get('period', '7d')
+    wear = request.GET.get('wear', 'factory-new')
+
+    # Генерация тестовых данных
+    if period == '7d':
+        data = [
+            {'date': '2024-01-01', 'price': 79.09},
+            {'date': '2024-01-02', 'price': 92.44},
+            {'date': '2024-01-03', 'price': 76.79},
+            {'date': '2024-01-04', 'price': 76.60},
+            {'date': '2024-01-05', 'price': 79.31},
+            {'date': '2024-01-06', 'price': 86.03},
+            {'date': '2024-01-07', 'price': 85.72}
+        ]
+    elif period == '30d':
+        data = []
+        for i in range(30, 0, -1):
+            data.append({
+                'date': f'2024-01-{i:02d}',
+                'price': 60 + (i * 0.5) + (i % 3)
+            })
+    else:
+        data = [
+            {'date': '2023-10', 'price': 29.47},
+            {'date': '2023-11', 'price': 32.15},
+            {'date': '2023-12', 'price': 38.02},
+            {'date': '2024-01', 'price': 42.50},
+            {'date': '2024-02', 'price': 48.52},
+            {'date': '2024-03', 'price': 52.30},
+            {'date': '2024-04', 'price': 60.63},
+            {'date': '2024-05', 'price': 65.80},
+            {'date': '2024-06', 'price': 70.45},
+            {'date': '2024-07', 'price': 85.18},
+            {'date': '2024-08', 'price': 95.60},
+            {'date': '2024-09', 'price': 118.51}
+        ]
+
+    return JsonResponse({'period': period, 'data': data})
+
+
 def logout_view(request):
     logout(request)
     if 'steam_data' in request.session:
@@ -587,3 +868,38 @@ def logout_view(request):
 
     next_url = request.GET.get('next', 'home')
     return redirect(next_url)
+
+
+def pricing_view(request):
+    """Страница тарифных планов"""
+    steam_data = request.session.get('steam_data', {})
+
+    # Проверяем текущую подписку пользователя
+    user_subscription = {
+        'plan': 'free',  # free, standard, pro, business
+        'expires_at': None,
+        'trial_days_left': 0
+    }
+
+    # Если пользователь авторизован, можно проверить его подписку в базе данных
+    if request.user.is_authenticated:
+        try:
+            from .models import UserSubscription
+            subscription = UserSubscription.objects.filter(user=request.user).first()
+            if subscription:
+                user_subscription = {
+                    'plan': subscription.plan_type,
+                    'expires_at': subscription.expires_at,
+                    'trial_days_left': subscription.trial_days_left
+                }
+        except:
+            pass
+
+    context = {
+        'user': request.user,
+        'steam_data': steam_data,
+        'user_subscription': user_subscription,
+        'page_title': 'Тарифные планы - CS Market Analytics',
+    }
+
+    return render(request, 'pricing.html', context)
