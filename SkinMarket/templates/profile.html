@@ -774,27 +774,27 @@
             <a href="{% url 'home' %}" class="logo">CSMARKET ANALYTICS</a>
             <nav class="nav-links">
                 <a href="{% url 'home' %}">Главная</a>
-                <a href="{% url 'steam_auth:comparison_price' %}">Сравнение цен</a>
+                <a href="{% url 'comparison_price' %}">Сравнение цен</a>
                 <a href="#">Рынок</a>
-                <a href="{% url 'steam_auth:profile' %}" style="color: #4f7bff; font-weight: 600;">Профиль</a>
-                <a href="{% url 'steam_auth:pricing' %}">Тарифы</a>
+                <a href="{% url 'profile' %}" style="color: #4f7bff; font-weight: 600;">Профиль</a>
+                <a href="{% url 'pricing' %}">Тарифы</a>
             </nav>
 
             <div class="auth-buttons">
                 {% if user.is_authenticated %}
                     <div class="user-info">
                         {% if steam_data.avatar_medium %}
-                            <a href="{% url 'steam_auth:profile' %}" class="username-link">
+                            <a href="{% url 'profile' %}" class="username-link">
                                 <img src="{{ steam_data.avatar_medium }}"
                                      alt="Аватар"
                                      class="user-avatar-small">
                                 <span>{{ steam_data.persona_name|default:user.username }}</span>
                             </a>
                         {% endif %}
-                        <a href="{% url 'steam_auth:logout' %}" class="btn btn-logout">Выйти</a>
+                        <a href="{% url 'logout' %}" class="btn btn-logout">Выйти</a>
                     </div>
                 {% else %}
-                    <a href="{% url 'steam_auth:login' %}" class="btn btn-login">Войти через Steam</a>
+                    <a href="{% url 'login' %}" class="btn btn-login">Войти через Steam</a>
                 {% endif %}
             </div>
         </header>
@@ -887,7 +887,7 @@
                             <i class="fas fa-external-link-alt"></i> Профиль Steam
                         </a>
                         {% endif %}
-                        <a href="{% url 'steam_auth:logout' %}" class="btn btn-logout">
+                        <a href="{% url 'logout' %}" class="btn btn-logout">
                             <i class="fas fa-sign-out-alt"></i> Выйти
                         </a>
                     </div>
@@ -938,7 +938,7 @@
                             <button class="btn-icon" onclick="addSampleItems()">
                                 <i class="fas fa-plus"></i> Добавить
                             </button>
-                            <a href="{% url 'steam_auth:comparison_price' %}" class="btn-icon success">
+                            <a href="{% url 'comparison_price' %}" class="btn-icon success">
                                 <i class="fas fa-exchange-alt"></i> Сравнить
                             </a>
                         </div>
@@ -971,7 +971,7 @@
                                 <h3>Кошелек пуст</h3>
                                 <p>Добавьте предметы из раздела "Сравнение цен"</p>
                                 <p style="margin-top: 10px;">
-                                    <a href="{% url 'steam_auth:comparison_price' %}" class="btn btn-login" style="margin-top: 10px; padding: 8px 16px;">
+                                    <a href="{% url 'comparison_price' %}" class="btn btn-login" style="margin-top: 10px; padding: 8px 16px;">
                                         <i class="fas fa-exchange-alt"></i> Перейти к сравнению цен
                                     </a>
                                 </p>
@@ -1039,7 +1039,7 @@
 
         // Определяем базовый URL для страницы скина
         {% if request %}
-            window.skinDetailBaseUrl = "{% url 'steam_auth:skin_detail' skin_name='{slug}' %}".replace('{slug}', '{slug}');
+            window.skinDetailBaseUrl = "{% url 'skin_detail' skin_name='{slug}' %}".replace('{slug}', '{slug}');
         {% else %}
             window.skinDetailBaseUrl = '/skin/{slug}/';
         {% endif %}
@@ -1345,12 +1345,30 @@
 
         // Функция для добавления предмета в кошелек
         function addToWallet(itemName, itemImage) {
+            // Получаем текущие предметы из localStorage
+            let walletItems = JSON.parse(localStorage.getItem('walletItems') || '[]');
+
+            // Проверяем, не добавлен ли уже этот предмет
+            const alreadyAdded = walletItems.some(walletItem =>
+                walletItem.name === itemName
+            );
+
+            if (alreadyAdded) {
+                showNotification(`"${itemName}" уже добавлен в ваш кошелек!`, 'warning');
+                return;
+            }
+
+            // Создаем объект предмета для кошелька
             const newItem = {
+                id: Date.now(), // Генерируем уникальный ID
                 name: itemName,
-                price: Math.random() * 100 + 10,
-                change: (Math.random() * 20 - 10).toFixed(1),
-                profit: Math.random() * 10,
-                image: itemImage
+                image: itemImage,
+                price: Math.random() * 100 + 10, // Для демо
+                change: (Math.random() * 20 - 10).toFixed(1), // Для демо
+                profit: Math.random() * 10, // Для демо
+                category: 'weapon', // Для демо
+                addedDate: new Date().toISOString(),
+                url: `https://steamcommunity.com/market/listings/730/${encodeURIComponent(itemName)}`
             };
 
             walletItems.push(newItem);

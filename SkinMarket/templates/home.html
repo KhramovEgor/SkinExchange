@@ -908,27 +908,27 @@
             <a href="{% url 'home' %}" class="logo">CSMARKET ANALYTICS</a>
             <nav class="nav-links">
                 <a href="{% url 'home' %}" style="color: #4f7bff; font-weight: 600;">Главная</a>
-                <a href="{% url 'steam_auth:comparison_price' %}">Сравнение цен</a>
+                <a href="{% url 'comparison_price' %}">Сравнение цен</a>
                 <a href="#">Рынок</a>
-                <a href="{% url 'steam_auth:profile' %}">Профиль</a>
-                <a href="{% url 'steam_auth:pricing' %}">Тарифы</a>
+                <a href="{% url 'profile' %}">Профиль</a>
+                <a href="{% url 'pricing' %}">Тарифы</a>
             </nav>
 
             <div class="auth-buttons">
                 {% if user.is_authenticated %}
                     <div class="user-info">
                         {% if request.session.steam_data.avatar_medium %}
-                            <a href="{% url 'steam_auth:profile' %}" class="username-link">
+                            <a href="{% url 'profile' %}" class="username-link">
                                 <img src="{{ request.session.steam_data.avatar_medium }}"
                                      alt="Аватар"
                                      class="user-avatar-small">
                                 <span>{{ request.session.steam_data.persona_name|default:user.username }}</span>
                             </a>
                         {% endif %}
-                        <a href="{% url 'steam_auth:logout' %}" class="btn btn-logout">Выйти</a>
+                        <a href="{% url 'logout' %}" class="btn btn-logout">Выйти</a>
                     </div>
                 {% else %}
-                    <a href="{% url 'steam_auth:login' %}" class="btn btn-login">
+                    <a href="{% url 'login' %}" class="btn btn-login">
                         <i class="fab fa-steam"></i> Войти через Steam
                     </a>
                 {% endif %}
@@ -944,7 +944,7 @@
                 </p>
 
                 {% if not user.is_authenticated %}
-                    <a href="{% url 'steam_auth:login' %}" class="btn btn-login" style="padding: 8px 20px; font-size: 14px;">
+                    <a href="{% url 'login' %}" class="btn btn-login" style="padding: 8px 20px; font-size: 14px;">
                         <i class="fab fa-steam"></i> Войти для аналитики
                     </a>
                 {% else %}
@@ -1066,7 +1066,7 @@
                             <i class="fas fa-fire"></i>
                             Самые популярные предметы
                         </h3>
-                        <a href="{% url 'steam_auth:comparison_price' %}" class="btn-small">
+                        <a href="{% url 'comparison_price' %}" class="btn-small">
                             Все предметы →
                         </a>
                     </div>
@@ -1382,11 +1382,11 @@
                         Быстрые действия
                     </h3>
                     <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <a href="{% url 'steam_auth:comparison_price' %}" class="btn btn-login" style="width: 100%; text-align: center; padding: 8px; font-size: 13px;">
+                        <a href="{% url 'comparison_price' %}" class="btn btn-login" style="width: 100%; text-align: center; padding: 8px; font-size: 13px;">
                             <i class="fas fa-exchange-alt"></i> Сравнить цены
                         </a>
                         {% if user.is_authenticated %}
-                            <a href="{% url 'steam_auth:profile' %}" class="btn btn-small" style="width: 100%; text-align: center; padding: 8px; font-size: 13px;">
+                            <a href="{% url 'profile' %}" class="btn btn-small" style="width: 100%; text-align: center; padding: 8px; font-size: 13px;">
                                 <i class="fas fa-wallet"></i> Мой кошелек
                             </a>
                         {% else %}
@@ -1394,7 +1394,7 @@
                                 <p style="color: #8a94a6; font-size: 12px; margin-bottom: 8px;">
                                     Войдите для доступа к персональным функциям
                                 </p>
-                                <a href="{% url 'steam_auth:login' %}" class="btn btn-login" style="width: 100%; text-align: center; padding: 8px; font-size: 13px;">
+                                <a href="{% url 'login' %}" class="btn btn-login" style="width: 100%; text-align: center; padding: 8px; font-size: 13px;">
                                     <i class="fab fa-steam"></i> Войти через Steam
                                 </a>
                             </div>

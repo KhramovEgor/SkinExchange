@@ -532,10 +532,10 @@
             <a href="{% url 'home' %}" class="logo">CSMARKET ANALYTICS</a>
             <nav class="nav-links">
                 <a href="{% url 'home' %}">Главная</a>
-                <a href="{% url 'steam_auth:comparison_price' %}">Сравнение цен</a>
+                <a href="{% url 'comparison_price' %}">Сравнение цен</a>
                 <a href="#">Рынок</a>
-                <a href="{% url 'steam_auth:profile' %}">Профиль</a>
-                <a href="{% url 'steam_auth:pricing' %}" style="color: #4f7bff; font-weight: 600;">Тарифы</a>
+                <a href="{% url 'profile' %}">Профиль</a>
+                <a href="{% url 'pricing' %}" style="color: #4f7bff; font-weight: 600;">Тарифы</a>
             </nav>
 
             <div class="auth-buttons">
@@ -549,10 +549,10 @@
                                 <span>{{ steam_data.persona_name|default:user.username }}</span>
                             </a>
                         {% endif %}
-                        <a href="{% url 'steam_auth:logout' %}" class="btn btn-logout">Выйти</a>
+                        <a href="{% url 'logout' %}" class="btn btn-logout">Выйти</a>
                     </div>
                 {% else %}
-                    <a href="{% url 'steam_auth:login' %}" class="btn btn-login">Войти через Steam</a>
+                    <a href="{% url 'login' %}" class="btn btn-login">Войти через Steam</a>
                 {% endif %}
             </div>
         </header>

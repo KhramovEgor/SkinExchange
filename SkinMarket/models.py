@@ -63,7 +63,7 @@ def save_steam_profile(sender, instance, **kwargs):
         instance.steam_profile.save()
 
 
-# models.py (добавьте в steam_auth/models.py)
+# models.py (добавьте в SkinMarket/models.py)
 from django.db import models
 from django.contrib.auth.models import User
 import json

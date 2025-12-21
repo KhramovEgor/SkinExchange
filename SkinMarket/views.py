@@ -1,19 +1,13 @@
 import re
 from urllib.parse import urlencode
 
-import requests
-import json
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
+from django.template.defaulttags import register
 from django.urls import reverse
 from django.views.decorators.http import require_GET
-
-# В начало views.py добавьте:
-from django.template.defaulttags import register
 
 
 @register.filter
@@ -71,6 +65,7 @@ def create_rating_stars(rating):
 
     return stars
 
+
 def home_view(request):
     """Главная страница сайта"""
     items_data = [
@@ -113,7 +108,7 @@ def home_view(request):
         }
     }
 
-    return render(request, 'steam_auth/home.html', context)
+    return render(request, 'home.html', context)
 
 
 def steam_login(request):
@@ -128,7 +123,7 @@ def steam_login(request):
         'openid.ns': 'http://specs.openid.net/auth/2.0',
         'openid.mode': 'checkid_setup',
         'openid.return_to': request.build_absolute_uri(
-            reverse('steam_auth:callback')
+            reverse('callback')
         ),
         'openid.realm': request.build_absolute_uri('/'),
         'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
@@ -195,7 +190,7 @@ def steam_callback(request):
             if steam_data:
                 update_user_profile(user, steam_data)
 
-            login(request, user, backend='steam_auth.backends.SteamBackend')
+            login(request, user, backend='SkinMarket.backends.SteamBackend')
 
             request.session['steam_data'] = {
                 'steam_id': steam_id,
@@ -212,7 +207,7 @@ def steam_callback(request):
 
             messages.success(request, f"Успешный вход! Добро пожаловать!")
 
-            next_url = request.session.pop('login_next_url', 'steam_auth:profile')
+            next_url = request.session.pop('login_next_url', 'profile')
             return redirect(next_url)
         else:
             messages.error(request, "Ошибка создания пользователя!")
@@ -492,7 +487,7 @@ def profile_view(request):
         'page_title': f'Профиль {steam_data.get("persona_name", request.user.username)}',
     }
 
-    return render(request, 'steam_auth/profile.html', context)
+    return render(request, 'profile.html', context)
 
 
 @login_required
@@ -595,7 +590,7 @@ def compare_prices_view(request):
         'page_title': 'CS Market Analytics - Сравнение цен',
     }
 
-    return render(request, 'steam_auth/comparison_price.html', context)
+    return render(request, 'comparison_price.html', context)
 
 
 @require_GET
@@ -680,9 +675,8 @@ def get_market_data_api(request):
 
 
 # views.py
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.http import JsonResponse
-import json
 from django.views.decorators.http import require_GET
 import requests
 from django.conf import settings
@@ -754,7 +748,7 @@ def skin_detail_view(request, skin_name, wear=None):
         'selected_wear': wear if wear else 'factory-new'
     }
 
-    return render(request, 'steam_auth/skin_detail.html', context)
+    return render(request, 'skin_detail.html', context)
 
 
 @require_GET
@@ -908,4 +902,4 @@ def pricing_view(request):
         'page_title': 'Тарифные планы - CS Market Analytics',
     }
 
-    return render(request, 'steam_auth/pricing.html', context)
+    return render(request, 'pricing.html', context)

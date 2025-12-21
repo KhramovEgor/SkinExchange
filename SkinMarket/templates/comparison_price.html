@@ -837,10 +837,10 @@
             <a href="{% url 'home' %}" class="logo">CS Market Analysis</a>
             <nav class="nav-links">
                 <a href="{% url 'home' %}">Главная</a>
-                <a href="{% url 'steam_auth:comparison_price' %}" style="color: #4f7bff; font-weight: 600;">Сравнение цен</a>
+                <a href="{% url 'comparison_price' %}" style="color: #4f7bff; font-weight: 600;">Сравнение цен</a>
                 <a href="#">Рынок</a>
-                <a href="{% url 'steam_auth:profile' %}">Профиль</a>
-                <a href="{% url 'steam_auth:pricing' %}">Тарифы</a>
+                <a href="{% url 'profile' %}">Профиль</a>
+                <a href="{% url 'pricing' %}">Тарифы</a>
             </nav>
             <div class="auth-buttons">
                 {% if user.is_authenticated %}
@@ -861,10 +861,10 @@
                                 {% endif %}
                             </span>
                         </a>
-                        <a href="{% url 'steam_auth:logout' %}" class="btn btn-logout">Выйти</a>
+                        <a href="{% url 'logout' %}" class="btn btn-logout">Выйти</a>
                     </div>
                 {% else %}
-                    <a href="{% url 'steam_auth:login' %}" class="btn btn-login">Войти через Steam</a>
+                    <a href="{% url 'login' %}" class="btn btn-login">Войти через Steam</a>
                 {% endif %}
             </div>
         </header>
@@ -1136,7 +1136,7 @@
     <script>
         // Определяем базовый URL для страницы скина
         {% if request %}
-            window.skinDetailBaseUrl = "{% url 'steam_auth:skin_detail' skin_name='{slug}' %}".replace('{slug}', '{slug}');
+            window.skinDetailBaseUrl = "{% url 'skin_detail' skin_name='{slug}' %}".replace('{slug}', '{slug}');
         {% else %}
             window.skinDetailBaseUrl = '/skin/{slug}/';
         {% endif %}
@@ -1194,102 +1194,6 @@
                 "updated": "2024-03-14",
                 "image": "https://steamcommunity-a.akamaihd.net/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bjn_lDkShjjoYbh_ilk__O8Ybc_cKLAMWSfz_pzvuVsXTr9kRki5m_Uwtz7cXKWO1ApCcByRLEO50LtkoWyP7_k4Afdi99GniT4jzQJsHjtsZcvVQ",
                 "url": "https://steamcommunity.com/market/listings/730/Paris 2023 Contenders Sticker Capsule"
-            },
-            {
-                "id": 3,
-                "name": "AK-47 | Красная линия (Прямо с завода)",
-                "hash_name": "AK-47 | Redline (Field-Tested)",
-                "category": "weapon",
-                "price": {
-                    "lowest_price": 1245.50,
-                    "median_price": 1298.76,
-                    "volume": 28742
-                },
-                "profit": 23.5,
-                "liquidity": 92,
-                "updated": "2024-03-15",
-                "image": "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJV_9W7m5a0mvLwOq7cqWdY781ptejX8N6g0Qew_BJpYTv2d47DdQ45YV7Y_VTrxOfq0JO-6J_OzSQ26D5Dsi5ytylL8Vw",
-                "url": "https://steamcommunity.com/market/listings/730/AK-47 | Redline (Field-Tested)"
-            },
-            {
-                "id": 4,
-                "name": "Перчатки | Спектр (После полевых испытаний)",
-                "hash_name": "Sport Gloves | Arid (Field-Tested)",
-                "category": "glove",
-                "price": {
-                    "lowest_price": 12450.00,
-                    "median_price": 12890.00,
-                    "volume": 1247
-                },
-                "profit": 18.7,
-                "liquidity": 65,
-                "updated": "2024-03-13",
-                "image": "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJV_9W7m5a0mvLwOq7cqWdY781ptejX8N6g0Qew_BJpYTv2d47DdQ45YV7Y_VTrxOfq0JO-6J_OzSQ26D5Dsi5ytylL8Vw",
-                "url": "https://steamcommunity.com/market/listings/730/Sport Gloves | Arid (Field-Tested)"
-            },
-            {
-                "id": 5,
-                "name": "Нож-бабочка | Ультрафиолет (После полевых испытаний)",
-                "hash_name": "Butterfly Knife | Ultraviolet (Field-Tested)",
-                "category": "knife",
-                "price": {
-                    "lowest_price": 45678.90,
-                    "median_price": 47890.12,
-                    "volume": 892
-                },
-                "profit": 32.1,
-                "liquidity": 78,
-                "updated": "2024-03-15",
-                "image": "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJV_9W7m5a0mvLwOq7cqWdY781ptejX8N6g0Qew_BJpYTv2d47DdQ45YV7Y_VTrxOfq0JO-6J_OzSQ26D5Dsi5ytylL8Vw",
-                "url": "https://steamcommunity.com/market/listings/730/Butterfly Knife | Ultraviolet (Field-Tested)"
-            },
-            {
-                "id": 6,
-                "name": "Снайперская винтовка | Повелитель зверей (Прямо с завода)",
-                "hash_name": "AWP | Wildfire (Factory New)",
-                "category": "weapon",
-                "price": {
-                    "lowest_price": 890.45,
-                    "median_price": 945.67,
-                    "volume": 15678
-                },
-                "profit": 12.4,
-                "liquidity": 81,
-                "updated": "2024-03-14",
-                "image": "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJV_9W7m5a0mvLwOq7cqWdY781ptejX8N6g0Qew_BJpYTv2d47DdQ45YV7Y_VTrxOfq0JO-6J_OzSQ26D5Dsi5ytylL8Vw",
-                "url": "https://steamcommunity.com/market/listings/730/AWP | Wildfire (Factory New)"
-            },
-            {
-                "id": 7,
-                "name": "Агент | Майор",
-                "hash_name": "Major | Soldier",
-                "category": "agent",
-                "price": {
-                    "lowest_price": 145.67,
-                    "median_price": 156.78,
-                    "volume": 1035
-                },
-                "profit": -3.2,
-                "liquidity": 45,
-                "updated": "2024-03-10",
-                "image": "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJV_9W7m5a0mvLwOq7cqWdY781ptejX8N6g0Qew_BJpYTv2d47DdQ45YV7Y_VTrxOfq0JO-6J_OzSQ26D5Dsi5ytylL8Vw",
-                "url": "https://steamcommunity.com/market/listings/730/Major | Soldier"
-            },
-            {
-                "id": 8,
-                "name": "Кейс «Гамма»",
-                "hash_name": "Gamma Case",
-                "category": "case",
-                "price": {
-                    "lowest_price": 78.90,
-                    "median_price": 82.45,
-                    "volume": 5217
-                },
-                "profit": 15.3,
-                "liquidity": 88,
-                "updated": "2024-03-15",
-                "image": "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJV_9W7m5a0mvLwOq7cqWdY781ptejX8N6g0Qew_BJpYTv2d47DdQ45YV7Y_VTrxOfq0JO-6J_OzSQ26D5Dsi5ytylL8Vw",
-                "url": "https://steamcommunity.com/market/listings/730/Gamma Case"
             }
         ];
 
@@ -1449,7 +1353,7 @@ function openSkinDetails(skinName) {
 
             // Проверяем, не добавлен ли уже этот предмет
             const alreadyAdded = walletItems.some(walletItem =>
-                walletItem.id === item.id
+                walletItem.id === item.id || walletItem.name === item.name
             );
 
             if (alreadyAdded) {
@@ -1459,7 +1363,7 @@ function openSkinDetails(skinName) {
 
             // Создаем объект предмета для кошелька
             const walletItem = {
-                id: item.id,
+                id: item.id || Date.now(), // Используем текущее время если нет ID
                 name: item.name,
                 hash_name: item.hash_name,
                 image: item.image,
@@ -1467,8 +1371,9 @@ function openSkinDetails(skinName) {
                 price: item.price.lowest_price,
                 addedDate: new Date().toISOString(),
                 currentPrice: item.price.lowest_price,
-                profit: item.profit,
-                category: item.category
+                profit: item.profit || 0,
+                change: item.profit || 0,
+                category: item.category || 'weapon'
             };
 
             // Добавляем предмет в кошелек
@@ -1478,6 +1383,25 @@ function openSkinDetails(skinName) {
             localStorage.setItem('walletItems', JSON.stringify(walletItems));
 
             showNotification(`"${item.name}" добавлен в ваш инвестиционный кошелек!`, 'success');
+
+            // Обновляем кнопку, чтобы показать что предмет добавлен
+            updateAddToWalletButton(item.id);
+        }
+
+        function updateAddToWalletButton(itemId) {
+            const buttons = document.querySelectorAll('.btn-wallet');
+
+            buttons.forEach(button => {
+                // Получаем ID предмета из данных кнопки (можно добавить data-id атрибут)
+                if (button.dataset.id == itemId) {
+                    button.innerHTML = '<i class="fas fa-check"></i> Добавлено';
+                    button.classList.add('disabled');
+                    button.onclick = null; // Убираем обработчик
+                    button.style.background = 'rgba(0, 208, 156, 0.2)';
+                    button.style.color = '#00d09c';
+                    button.style.borderColor = '#00d09c';
+                }
+            });
         }
 
         // Функция для отображения предметов в таблице
@@ -1553,7 +1477,8 @@ function openSkinDetails(skinName) {
                             <i class="fas fa-chart-line"></i> Детали
                         </button>
                         <button class="btn-action btn-wallet ${isAuthenticated ? '' : 'disabled'}"
-                                onclick="${isAuthenticated ? `addToWallet(${JSON.stringify(item)})` : 'showLoginAlert()'}">
+                                onclick="${isAuthenticated ? `addToWallet(${JSON.stringify(item).replace(/"/g, '&quot;')})` : 'showLoginAlert()'}"
+                                data-id="${item.id}">
                             <i class="fas fa-wallet"></i> В кошелек
                         </button>
                     </td>
