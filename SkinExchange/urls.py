@@ -28,4 +28,10 @@ urlpatterns = [
     path('', views.home_view, name='home'),
     path('profile/', views.profile_view, name='profile'),
     path('api/inventory/', views.get_steam_inventory, name='api_inventory'),
+    path('pricing/', views.pricing_view, name='pricing'),
+    path('skin/<str:skin_name>/', views.skin_detail_view, name='skin_detail'),
+    path('skin/<str:skin_name>/<str:wear>/', views.skin_detail_view, name='skin_detail_with_wear'),
+    path('api/skin/<str:skin_name>/data/', views.get_skin_data_api, name='skin_data_api'),
+    path('api/skin/<str:skin_name>/prices/', views.get_skin_prices_api, name='skin_prices_api'),
+    path('api/skin/<str:skin_name>/history/', views.get_skin_history_api, name='skin_history_api'),
 ]

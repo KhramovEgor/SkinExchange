@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CS Market Analysis - Сравнение цен</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* === ОСНОВНЫЕ СТИЛИ === */
         * {
@@ -63,6 +64,7 @@
         .auth-buttons {
             display: flex;
             gap: 15px;
+            align-items: center;
         }
 
         .btn {
@@ -89,33 +91,179 @@
             box-shadow: 0 5px 15px rgba(79, 123, 255, 0.3);
         }
 
-        /* === ФИЛЬТРЫ === */
-        .filters-section {
+        .btn-logout {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+            border: 1px solid #ff4757;
+            padding: 8px 16px;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 71, 87, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d09c, #00b894);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #00b894, #00a885);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 208, 156, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(79, 123, 255, 0.1);
+            color: #4f7bff;
+            border: 1px solid #4f7bff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(79, 123, 255, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid #4f7bff;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .user-avatar-small:hover {
+            transform: scale(1.1);
+            border-color: #66c0f4;
+        }
+
+
+        .btn-details {
+            background: rgba(108, 92, 231, 0.1);
+            color: #6c5ce7;
+            border: 1px solid #6c5ce7;
+        }
+
+        .btn-details:hover {
+            background: rgba(108, 92, 231, 0.2);
+            transform: translateY(-2px);
+        }
+        .username-link {
+            text-decoration: none;
+            color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .username-link:hover {
+            text-decoration: underline;
+            color: #66c0f4;
+        }
+
+        /* === ПОИСК И ФИЛЬТРЫ === */
+        .search-section {
             background: rgba(26, 31, 46, 0.7);
             border-radius: 16px;
             padding: 25px;
             border: 1px solid #2a2f3d;
             margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
-        .filters-title {
+        .search-title {
             font-size: 24px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             color: #f0f0f0;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .filters-title::before {
-            content: "⚙️";
-            font-size: 20px;
+        .search-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 14px 20px;
+            background: rgba(42, 47, 61, 0.8);
+            border: 1px solid #3a3f4d;
+            border-radius: 8px;
+            color: #f0f0f0;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4f7bff;
+            box-shadow: 0 0 0 2px rgba(79, 123, 255, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: #8a94a6;
+        }
+
+        .filters-toggle {
+            background: rgba(42, 47, 61, 0.8);
+            border: 1px solid #3a3f4d;
+            border-radius: 8px;
+            padding: 14px 20px;
+            color: #f0f0f0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .filters-toggle:hover {
+            border-color: #4f7bff;
+            background: rgba(42, 47, 61, 0.9);
         }
 
         .filters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #2a2f3d;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .filter-group {
@@ -128,10 +276,18 @@
             margin-bottom: 8px;
             color: #b0b7c3;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .filter-input {
-            width: 100%;
+        .range-inputs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .range-input {
+            flex: 1;
             padding: 12px;
             background: rgba(42, 47, 61, 0.8);
             border: 1px solid #3a3f4d;
@@ -140,8 +296,131 @@
             font-size: 14px;
         }
 
-        .filter-input::placeholder {
-            color: #6c757d;
+        .range-input:focus {
+            outline: none;
+            border-color: #4f7bff;
+        }
+
+        .select-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(42, 47, 61, 0.8);
+            border: 1px solid #3a3f4d;
+            border-radius: 8px;
+            color: #f0f0f0;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .select-input:focus {
+            outline: none;
+            border-color: #4f7bff;
+        }
+
+        .filter-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #2a2f3d;
+        }
+
+        .total-items {
+            color: #8a94a6;
+            font-size: 16px;
+        }
+
+        .total-items span {
+            color: #4f7bff;
+            font-weight: 600;
+        }
+
+        .sort-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* === ОСНОВНОЙ КОНТЕНТ === */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 1200px) {
+            .main-content {
+                grid-template-columns: 300px 1fr;
+            }
+        }
+
+        /* === СТАТИСТИКА === */
+        .stats-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .stats-card {
+            background: rgba(26, 31, 46, 0.7);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #2a2f3d;
+        }
+
+        .stats-card h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(42, 47, 61, 0.5);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #8a94a6;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f0f0f0;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        .stat-change.positive {
+            background: rgba(0, 208, 156, 0.1);
+            color: #00d09c;
+        }
+
+        .stat-change.negative {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
         }
 
         /* === ТАБЛИЦА СРАВНЕНИЯ === */
@@ -151,26 +430,37 @@
             padding: 25px;
             border: 1px solid #2a2f3d;
             overflow-x: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
         }
 
         .section-title {
             font-size: 24px;
-            margin-bottom: 25px;
             color: #f0f0f0;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .section-title::before {
-            content: "📊";
-            font-size: 20px;
+        .section-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
         }
 
         .items-count {
-            color: #8a94a6;
-            font-size: 16px;
-            margin-left: 10px;
+            background: rgba(79, 123, 255, 0.1);
+            color: #4f7bff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .comparison-table {
@@ -186,6 +476,8 @@
             font-weight: 600;
             color: #b0b7c3;
             border-bottom: 2px solid #3a3f4d;
+            position: sticky;
+            top: 0;
         }
 
         .comparison-table td {
@@ -193,8 +485,14 @@
             border-bottom: 1px solid #2a2f3d;
         }
 
+        .comparison-table tbody tr {
+            transition: all 0.3s;
+        }
+
         .comparison-table tbody tr:hover {
             background: rgba(42, 47, 61, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         /* Стили для колонок таблицы */
@@ -205,11 +503,17 @@
         }
 
         .item-image {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
             border: 2px solid #3a3f4d;
             object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .item-col:hover .item-image {
+            transform: scale(1.05);
+            border-color: #4f7bff;
         }
 
         .item-info {
@@ -221,15 +525,22 @@
             font-weight: 600;
             color: #f0f0f0;
             margin-bottom: 4px;
+            font-size: 16px;
         }
 
-        .item-hash {
+        .item-category {
             font-size: 12px;
             color: #8a94a6;
+            background: rgba(42, 47, 61, 0.5);
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 4px;
         }
 
         .price-col {
             font-weight: 600;
+            font-size: 16px;
         }
 
         .lowest-price {
@@ -240,75 +551,164 @@
             color: #4f7bff;
         }
 
+        .profit-col {
+            font-weight: 600;
+        }
+
+        .profit-col.positive {
+            color: #00d09c;
+        }
+
+        .profit-col.negative {
+            color: #ff4757;
+        }
+
         .volume-col {
             color: #f0f0f0;
         }
 
+        .liquidity-col {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .liquidity-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(42, 47, 61, 0.5);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .liquidity-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .liquidity-fill.high {
+            background: linear-gradient(90deg, #00d09c, #00b894);
+        }
+
+        .liquidity-fill.medium {
+            background: linear-gradient(90deg, #4f7bff, #6c5ce7);
+        }
+
+        .liquidity-fill.low {
+            background: linear-gradient(90deg, #ff9500, #ff7300);
+        }
+
         .action-col {
-            text-align: center;
+            display: flex;
+            gap: 10px;
         }
 
-        .btn-view {
+        .btn-action {
             padding: 8px 16px;
-            background: rgba(79, 123, 255, 0.1);
-            color: #4f7bff;
-            border: 1px solid #4f7bff;
             border-radius: 6px;
-            text-decoration: none;
             font-weight: 500;
+            text-decoration: none;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
         }
 
-        .btn-view:hover {
-            background: rgba(79, 123, 255, 0.2);
+        .btn-steam {
+            background: rgba(0, 39, 73, 0.2);
+            color: #66c0f4;
+            border: 1px solid #66c0f4;
+        }
+
+        .btn-steam:hover {
+            background: rgba(0, 39, 73, 0.3);
             transform: translateY(-2px);
         }
 
-        /* === СТАТИСТИКА === */
-        .stats-section {
-            margin-top: 30px;
-            background: rgba(26, 31, 46, 0.7);
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid #2a2f3d;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .stat-card {
-            background: rgba(42, 47, 61, 0.8);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid #3a3f4d;
-        }
-
-        .stat-title {
-            font-size: 14px;
-            color: #8a94a6;
-            margin-bottom: 10px;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #f0f0f0;
-            margin-bottom: 5px;
-        }
-
-        .stat-change {
-            font-size: 14px;
-        }
-
-        .stat-change.positive {
+        .btn-wallet {
+            background: rgba(0, 208, 156, 0.1);
             color: #00d09c;
+            border: 1px solid #00d09c;
         }
 
-        .stat-change.negative {
-            color: #ff4757;
+        .btn-wallet:hover {
+            background: rgba(0, 208, 156, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-wallet.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-wallet.disabled:hover {
+            transform: none;
+            background: rgba(0, 208, 156, 0.1);
+        }
+
+        /* === ПАГИНАЦИЯ === */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #2a2f3d;
+        }
+
+        .pagination-btn {
+            padding: 8px 16px;
+            background: rgba(42, 47, 61, 0.5);
+            border: 1px solid #3a3f4d;
+            border-radius: 6px;
+            color: #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: rgba(79, 123, 255, 0.1);
+            border-color: #4f7bff;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-pages {
+            display: flex;
+            gap: 5px;
+        }
+
+        .pagination-page {
+            padding: 8px 12px;
+            background: rgba(42, 47, 61, 0.5);
+            border: 1px solid #3a3f4d;
+            border-radius: 6px;
+            color: #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pagination-page:hover {
+            background: rgba(79, 123, 255, 0.1);
+            border-color: #4f7bff;
+        }
+
+        .pagination-page.active {
+            background: rgba(79, 123, 255, 0.2);
+            border-color: #4f7bff;
+            color: #4f7bff;
+            font-weight: 600;
         }
 
         /* === ФУТЕР === */
@@ -332,8 +732,38 @@
                 justify-content: center;
             }
 
+            .search-container {
+                flex-direction: column;
+            }
+
             .filters-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .filter-actions {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .sort-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .section-controls {
+                flex-direction: column;
+                align-items: stretch;
             }
 
             .comparison-table {
@@ -346,23 +776,57 @@
                 gap: 8px;
             }
 
-            .item-image {
-                width: 40px;
-                height: 40px;
+            .action-col {
+                flex-direction: column;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 10px;
             }
         }
 
         /* Стили для пустого состояния */
         .empty-state {
             text-align: center;
-            padding: 50px 20px;
+            padding: 60px 20px;
             color: #8a94a6;
         }
 
-        .empty-state img {
-            width: 100px;
-            opacity: 0.5;
+        .empty-state i {
+            font-size: 64px;
             margin-bottom: 20px;
+            opacity: 0.5;
+            color: #4f7bff;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #f0f0f0;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            max-width: 500px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
         }
     </style>
 </head>
@@ -370,179 +834,728 @@
     <div class="container">
         <!-- Шапка -->
         <header class="header">
-            <a href="#" class="logo">CS Market Analysis</a>
+            <a href="{% url 'home' %}" class="logo">CS Market Analysis</a>
             <nav class="nav-links">
-                <a href="#">Главная</a>
-                <a href="#" style="color: #4f7bff; font-weight: 600;">Сравнение цен</a>
-                <a href="#">Топ предметов</a>
-                <a href="#">Аналитика</a>
-                <a href="#">Блог</a>
+                <a href="{% url 'home' %}">Главная</a>
+                <a href="{% url 'steam_auth:comparison_price' %}" style="color: #4f7bff; font-weight: 600;">Сравнение цен</a>
+                <a href="#">Рынок</a>
+                <a href="{% url 'steam_auth:profile' %}">Профиль</a>
+                <a href="{% url 'steam_auth:pricing' %}">Тарифы</a>
             </nav>
             <div class="auth-buttons">
-                <a href="#" class="btn btn-login">Войти через Steam</a>
+                {% if user.is_authenticated %}
+                    <div class="user-info">
+                        {% if request.session.steam_data.avatar_medium %}
+                            <a href="{% url 'profile' %}" class="username-link">
+                                <img src="{{ request.session.steam_data.avatar_medium }}"
+                                     alt="Аватар"
+                                     class="user-avatar-small">
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'profile' %}" class="username-link">
+                            <span>
+                                {% if request.session.steam_data.persona_name %}
+                                    {{ request.session.steam_data.persona_name }}
+                                {% else %}
+                                    {{ user.username }}
+                                {% endif %}
+                            </span>
+                        </a>
+                        <a href="{% url 'steam_auth:logout' %}" class="btn btn-logout">Выйти</a>
+                    </div>
+                {% else %}
+                    <a href="{% url 'steam_auth:login' %}" class="btn btn-login">Войти через Steam</a>
+                {% endif %}
             </div>
         </header>
 
-        <!-- Фильтры -->
-        <section class="filters-section">
-            <h2 class="filters-title">Фильтры</h2>
-            <div class="filters-grid">
-                <div class="filter-group">
-                    <label class="filter-label">Цена</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" class="filter-input" placeholder="От 0" value="0">
-                        <input type="text" class="filter-input" placeholder="До 99999" value="99999">
-                    </div>
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Значение прибыли</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" class="filter-input" placeholder="От 0" value="0">
-                        <input type="text" class="filter-input" placeholder="До 99999" value="99999">
-                    </div>
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Ликвидность</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" class="filter-input" placeholder="От 0" value="0">
-                        <input type="text" class="filter-input" placeholder="До 100" value="100">
-                    </div>
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Процент прибыли</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" class="filter-input" placeholder="От 0" value="0">
-                        <input type="text" class="filter-input" placeholder="До 100" value="100">
-                    </div>
-                </div>
-            </div>
-            <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
-                <div style="color: #8a94a6; font-size: 14px;">
-                    Все <span style="color: #4f7bff; font-weight: 600;">28 699</span> предметов
-                </div>
-                <div style="display: flex; gap: 15px;">
-                    <select class="filter-input" style="width: auto;">
-                        <option>Избранное</option>
-                        <option>Все предметы</option>
-                    </select>
-                    <select class="filter-input" style="width: auto;">
-                        <option>Цена в Steam</option>
-                        <option>Цена на маркете</option>
-                    </select>
-                    <select class="filter-input" style="width: auto;">
-                        <option>Ликвидность</option>
-                        <option>Прибыль</option>
-                        <option>Топ предмета</option>
-                    </select>
-                </div>
-            </div>
-        </section>
-
-        <!-- Таблица сравнения -->
-        <section class="comparison-section">
-            <h2 class="section-title">
-                Сравнение цен
-                <span class="items-count">(2 предмета)</span>
+        <!-- Поиск и фильтры -->
+        <section class="search-section">
+            <h2 class="search-title">
+                <i class="fas fa-search"></i>
+                Поиск и фильтрация предметов
             </h2>
-            <table class="comparison-table">
-                <thead>
-                    <tr>
-                        <th>Предмет</th>
-                        <th>Минимальная цена</th>
-                        <th>Медианная цена</th>
-                        <th>Объем торгов</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody id="items-table">
-                    <!-- Данные будут вставлены через JavaScript -->
-                </tbody>
-            </table>
-        </section>
 
-        <!-- Статистика -->
-        <section class="stats-section">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-title">Средняя цена</div>
-                    <div class="stat-value">17,13 руб.</div>
-                    <div class="stat-change positive">↑ +2.3% за день</div>
+            <div class="search-container">
+                <input type="text"
+                       class="search-input"
+                       id="search-input"
+                       placeholder="Введите название предмета, например: AK-47 | Redline, AWP | Dragon Lore...">
+                <button class="btn-primary" id="search-btn">
+                    <i class="fas fa-search"></i>
+                    Найти
+                </button>
+                <div class="filters-toggle" id="filters-toggle">
+                    <i class="fas fa-sliders-h"></i>
+                    Фильтры
+                    <span id="active-filters-count" style="background: #4f7bff; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px;">0</span>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-title">Общий объем</div>
-                    <div class="stat-value">175,223</div>
-                    <div class="stat-change positive">↑ +15.7%</div>
+            </div>
+
+            <div class="filters-grid" id="filters-grid" style="display: none;">
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-tag"></i>
+                        Цена (руб.)
+                    </label>
+                    <div class="range-inputs">
+                        <input type="number" class="range-input" id="price-min" placeholder="От" min="0" step="0.01">
+                        <input type="number" class="range-input" id="price-max" placeholder="До" min="0" step="0.01">
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-title">Предметов в сравнении</div>
-                    <div class="stat-value">2</div>
-                    <div class="stat-title">из 28,699 доступных</div>
+
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-chart-line"></i>
+                        Прибыль (%)
+                    </label>
+                    <div class="range-inputs">
+                        <input type="number" class="range-input" id="profit-min" placeholder="От" min="0" step="0.1">
+                        <input type="number" class="range-input" id="profit-max" placeholder="До" min="0" step="0.1">
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-title">Средняя ликвидность</div>
-                    <div class="stat-value">78%</div>
-                    <div class="stat-change negative">↓ -3.2%</div>
+
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-bolt"></i>
+                        Ликвидность
+                    </label>
+                    <select class="select-input" id="liquidity-select">
+                        <option value="">Любая</option>
+                        <option value="high">Высокая (≥80%)</option>
+                        <option value="medium">Средняя (50-79%)</option>
+                        <option value="low">Низкая (&lt;50%)</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-layer-group"></i>
+                        Категория
+                    </label>
+                    <select class="select-input" id="category-select">
+                        <option value="">Все категории</option>
+                        <option value="knife">Ножи</option>
+                        <option value="glove">Перчатки</option>
+                        <option value="weapon">Оружие</option>
+                        <option value="case">Кейсы</option>
+                        <option value="sticker">Стикеры</option>
+                        <option value="agent">Агенты</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-exchange-alt"></i>
+                        Тип сделки
+                    </label>
+                    <select class="select-input" id="trade-type">
+                        <option value="">Все сделки</option>
+                        <option value="arbitrage">Арбитраж</option>
+                        <option value="investment">Инвестиции</option>
+                        <option value="short-term">Краткосрочные</option>
+                        <option value="long-term">Долгосрочные</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-calendar"></i>
+                        Обновлено
+                    </label>
+                    <select class="select-input" id="updated-select">
+                        <option value="">Любое время</option>
+                        <option value="1">За последние 24 часа</option>
+                        <option value="7">За последнюю неделю</option>
+                        <option value="30">За последний месяц</option>
+                    </select>
+                </div>
+
+                <div class="filter-actions">
+                    <div class="total-items">
+                        Всего предметов: <span id="total-items-count">28,699</span>
+                    </div>
+                    <div class="sort-controls">
+                        <select class="select-input" id="sort-by" style="width: 200px;">
+                            <option value="profit_desc">Прибыль (по убыванию)</option>
+                            <option value="profit_asc">Прибыль (по возрастанию)</option>
+                            <option value="price_desc">Цена (по убыванию)</option>
+                            <option value="price_asc">Цена (по возрастанию)</option>
+                            <option value="liquidity_desc">Ликвидность (по убыванию)</option>
+                            <option value="name_asc">Название (А-Я)</option>
+                        </select>
+                        <button class="btn-secondary" id="reset-filters">
+                            <i class="fas fa-redo"></i>
+                            Сбросить
+                        </button>
+                        <button class="btn-primary" id="apply-filters">
+                            <i class="fas fa-check"></i>
+                            Применить
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
+
+        <!-- Основной контент -->
+        <div class="main-content">
+            <!-- Боковая панель со статистикой -->
+            <div class="stats-sidebar">
+                <div class="stats-card">
+                    <h3><i class="fas fa-chart-bar"></i> Статистика рынка</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Средняя цена</span>
+                            <span class="stat-value">1,247 руб.</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Общий объем</span>
+                            <span class="stat-value">$1.8M</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Средняя ликвидность</span>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                <span class="stat-value">78%</span>
+                                <span class="stat-change positive">+2.3%</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Активных сделок</span>
+                            <span class="stat-value">12,847</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <h3><i class="fas fa-fire"></i> Популярные категории</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Ножи</span>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                <span class="stat-value">+8.2%</span>
+                                <span class="stat-change positive">1,247 предм.</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Перчатки</span>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                <span class="stat-value">+12.5%</span>
+                                <span class="stat-change positive">892 предм.</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Кейсы</span>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                <span class="stat-value">+15.3%</span>
+                                <span class="stat-change positive">5,217 предм.</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Стикеры</span>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                                <span class="stat-value">+25.1%</span>
+                                <span class="stat-change positive">8,942 предм.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <h3><i class="fas fa-lightbulb"></i> Советы трейдера</h3>
+                    <div style="color: #8a94a6; font-size: 14px; line-height: 1.6;">
+                        <p style="margin-bottom: 10px;">• Ищите предметы с ликвидностью выше 70%</p>
+                        <p style="margin-bottom: 10px;">• Прибыль от 15% с учетом комиссий</p>
+                        <p style="margin-bottom: 10px;">• Обращайте внимание на объем торгов</p>
+                        <p>• Диверсифицируйте портфель</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Таблица сравнения -->
+            <section class="comparison-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-exchange-alt"></i>
+                        Сравнение цен
+                    </h2>
+                    <div class="section-controls">
+                        <span class="items-count" id="filtered-items-count">2 предмета</span>
+                        <select class="select-input" id="page-size" style="width: 120px;">
+                            <option value="10">10 на странице</option>
+                            <option value="25">25 на странице</option>
+                            <option value="50">50 на странице</option>
+                            <option value="100">100 на странице</option>
+                        </select>
+                    </div>
+                </div>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Предмет</th>
+                            <th>Мин. цена</th>
+                            <th>Мед. цена</th>
+                            <th>Прибыль</th>
+                            <th>Ликвидность</th>
+                            <th>Объем</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="items-table">
+                        <!-- Данные будут вставлены через JavaScript -->
+                    </tbody>
+                </table>
+
+                <!-- Пагинация -->
+                <div class="pagination">
+                    <button class="pagination-btn" id="prev-page" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                        Назад
+                    </button>
+                    <div class="pagination-pages" id="pagination-pages"></div>
+                    <button class="pagination-btn" id="next-page">
+                        Вперед
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </section>
+        </div>
 
         <!-- Футер -->
         <footer class="footer">
             <p>© 2024 CS Market Analysis. Все права защищены.</p>
-            <p style="margin-top: 10px; font-size: 14px;">Данные предоставляются Steam Community Market</p>
+            <p style="margin-top: 10px; font-size: 14px;">Данные предоставляются Steam Community Market и партнерами</p>
+            {% if user.is_authenticated %}
+                <p style="margin-top: 10px; font-size: 14px;">
+                    Вы вошли как: <strong>{{ request.session.steam_data.persona_name|default:user.username }}</strong>
+                </p>
+            {% endif %}
         </footer>
     </div>
 
     <script>
-        // Данные из парсера (заглушка)
+        // Определяем базовый URL для страницы скина
+        {% if request %}
+            window.skinDetailBaseUrl = "{% url 'steam_auth:skin_detail' skin_name='{slug}' %}".replace('{slug}', '{slug}');
+        {% else %}
+            window.skinDetailBaseUrl = '/skin/{slug}/';
+        {% endif %}
+        // Добавьте эту функцию в начало JavaScript кода, перед itemsData
+        function createSlug(name) {
+            return name.toLowerCase()
+                .replace(/\|/g, '-')
+                .replace(/\s+/g, '-')
+                .replace(/[^\w-]/g, '')
+                .replace(/--+/g, '-')
+                .trim('-');
+        }
+
+        // Функция для открытия страницы скина
+        function openSkinDetails(skinName) {
+            const slug = createSlug(skinName);
+            // Проверяем, существует ли URL для деталей скина
+            if (typeof window.skinDetailBaseUrl !== 'undefined') {
+                window.location.href = window.skinDetailBaseUrl.replace('{slug}', slug);
+            } else {
+                // Если нет базового URL, используем относительный путь
+                window.location.href = `/skin/${slug}/`;
+            }
+        }
+        // Расширенные данные из парсера
         const itemsData = [
             {
+                "id": 1,
                 "name": "Кейс «Киловатт»",
                 "hash_name": "Kilowatt Case",
+                "category": "case",
                 "price": {
-                    "lowest_price": "24,76 руб.",
-                    "median_price": "24,97 руб.",
-                    "volume": "134,692"
+                    "lowest_price": 24.76,
+                    "median_price": 24.97,
+                    "volume": 134692
                 },
+                "profit": 15.3,
+                "liquidity": 85,
+                "updated": "2024-03-15",
                 "image": "https://steamcommunity-a.akamaihd.net/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bj35VTqVBP4io_frnEVvqf_a6VoIfGSXz7Hlbwg57QwSS_mxhl15jiGyN37c3_GZw91W8BwRflK7EfKsa2sfw",
                 "url": "https://steamcommunity.com/market/listings/730/Kilowatt Case"
             },
             {
+                "id": 2,
                 "name": "Капсула с наклейками кандидатов BLAST.tv Paris Major 2023",
                 "hash_name": "Paris 2023 Contenders Sticker Capsule",
+                "category": "sticker",
                 "price": {
-                    "lowest_price": "9,50 руб.",
-                    "median_price": "9,67 руб.",
-                    "volume": "40,531"
+                    "lowest_price": 9.50,
+                    "median_price": 9.67,
+                    "volume": 40531
                 },
+                "profit": 8.2,
+                "liquidity": 72,
+                "updated": "2024-03-14",
                 "image": "https://steamcommunity-a.akamaihd.net/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bjn_lDkShjjoYbh_ilk__O8Ybc_cKLAMWSfz_pzvuVsXTr9kRki5m_Uwtz7cXKWO1ApCcByRLEO50LtkoWyP7_k4Afdi99GniT4jzQJsHjtsZcvVQ",
                 "url": "https://steamcommunity.com/market/listings/730/Paris 2023 Contenders Sticker Capsule"
+            },
+            {
+                "id": 3,
+                "name": "AK-47 | Красная линия (Прямо с завода)",
+                "hash_name": "AK-47 | Redline (Field-Tested)",
+                "category": "weapon",
+                "price": {
+                    "lowest_price": 1245.50,
+                    "median_price": 1298.76,
+                    "volume": 28742
+                },
+                "profit": 23.5,
+                "liquidity": 92,
+                "updated": "2024-03-15",
+                "image": "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJV_9W7m5a0mvLwOq7cqWdY781ptejX8N6g0Qew_BJpYTv2d47DdQ45YV7Y_VTrxOfq0JO-6J_OzSQ26D5Dsi5ytylL8Vw",
+                "url": "https://steamcommunity.com/market/listings/730/AK-47 | Redline (Field-Tested)"
+            },
+            {
+                "id": 4,
+                "name": "Перчатки | Спектр (После полевых испытаний)",
+                "hash_name": "Sport Gloves | Arid (Field-Tested)",
+                "category": "glove",
+                "price": {
+                    "lowest_price": 12450.00,
+                    "median_price": 12890.00,
+                    "volume": 1247
+                },
+                "profit": 18.7,
+                "liquidity": 65,
+                "updated": "2024-03-13",
+                "image": "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJV_9W7m5a0mvLwOq7cqWdY781ptejX8N6g0Qew_BJpYTv2d47DdQ45YV7Y_VTrxOfq0JO-6J_OzSQ26D5Dsi5ytylL8Vw",
+                "url": "https://steamcommunity.com/market/listings/730/Sport Gloves | Arid (Field-Tested)"
+            },
+            {
+                "id": 5,
+                "name": "Нож-бабочка | Ультрафиолет (После полевых испытаний)",
+                "hash_name": "Butterfly Knife | Ultraviolet (Field-Tested)",
+                "category": "knife",
+                "price": {
+                    "lowest_price": 45678.90,
+                    "median_price": 47890.12,
+                    "volume": 892
+                },
+                "profit": 32.1,
+                "liquidity": 78,
+                "updated": "2024-03-15",
+                "image": "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJV_9W7m5a0mvLwOq7cqWdY781ptejX8N6g0Qew_BJpYTv2d47DdQ45YV7Y_VTrxOfq0JO-6J_OzSQ26D5Dsi5ytylL8Vw",
+                "url": "https://steamcommunity.com/market/listings/730/Butterfly Knife | Ultraviolet (Field-Tested)"
+            },
+            {
+                "id": 6,
+                "name": "Снайперская винтовка | Повелитель зверей (Прямо с завода)",
+                "hash_name": "AWP | Wildfire (Factory New)",
+                "category": "weapon",
+                "price": {
+                    "lowest_price": 890.45,
+                    "median_price": 945.67,
+                    "volume": 15678
+                },
+                "profit": 12.4,
+                "liquidity": 81,
+                "updated": "2024-03-14",
+                "image": "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJV_9W7m5a0mvLwOq7cqWdY781ptejX8N6g0Qew_BJpYTv2d47DdQ45YV7Y_VTrxOfq0JO-6J_OzSQ26D5Dsi5ytylL8Vw",
+                "url": "https://steamcommunity.com/market/listings/730/AWP | Wildfire (Factory New)"
+            },
+            {
+                "id": 7,
+                "name": "Агент | Майор",
+                "hash_name": "Major | Soldier",
+                "category": "agent",
+                "price": {
+                    "lowest_price": 145.67,
+                    "median_price": 156.78,
+                    "volume": 1035
+                },
+                "profit": -3.2,
+                "liquidity": 45,
+                "updated": "2024-03-10",
+                "image": "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJV_9W7m5a0mvLwOq7cqWdY781ptejX8N6g0Qew_BJpYTv2d47DdQ45YV7Y_VTrxOfq0JO-6J_OzSQ26D5Dsi5ytylL8Vw",
+                "url": "https://steamcommunity.com/market/listings/730/Major | Soldier"
+            },
+            {
+                "id": 8,
+                "name": "Кейс «Гамма»",
+                "hash_name": "Gamma Case",
+                "category": "case",
+                "price": {
+                    "lowest_price": 78.90,
+                    "median_price": 82.45,
+                    "volume": 5217
+                },
+                "profit": 15.3,
+                "liquidity": 88,
+                "updated": "2024-03-15",
+                "image": "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FAR17PLfYQJV_9W7m5a0mvLwOq7cqWdY781ptejX8N6g0Qew_BJpYTv2d47DdQ45YV7Y_VTrxOfq0JO-6J_OzSQ26D5Dsi5ytylL8Vw",
+                "url": "https://steamcommunity.com/market/listings/730/Gamma Case"
             }
         ];
+
+        // Переменные для состояния
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let filteredItems = [...itemsData];
+        let currentFilters = {
+            search: '',
+            priceMin: null,
+            priceMax: null,
+            profitMin: null,
+            profitMax: null,
+            liquidity: '',
+            category: '',
+            tradeType: '',
+            updated: '',
+            sortBy: 'profit_desc'
+        };
+
+        // Функция для форматирования чисел
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function formatPrice(price) {
+            return `${price.toFixed(2)} руб.`;
+        }
+
+        // Функция для получения уровня ликвидности
+        function getLiquidityLevel(liquidity) {
+            if (liquidity >= 80) return 'high';
+            if (liquidity >= 50) return 'medium';
+            return 'low';
+        }
+
+        // Функция для обновления счетчика активных фильтров
+        function updateActiveFiltersCount() {
+            let count = 0;
+            if (currentFilters.search) count++;
+            if (currentFilters.priceMin !== null) count++;
+            if (currentFilters.priceMax !== null) count++;
+            if (currentFilters.profitMin !== null) count++;
+            if (currentFilters.profitMax !== null) count++;
+            if (currentFilters.liquidity) count++;
+            if (currentFilters.category) count++;
+            if (currentFilters.tradeType) count++;
+            if (currentFilters.updated) count++;
+
+            document.getElementById('active-filters-count').textContent = count;
+        }
+
+
+        // Добавьте эту функцию в начало JavaScript кода, перед itemsData
+function createSlug(name) {
+    return name.toLowerCase()
+        .replace(/\|/g, '-')
+        .replace(/\s+/g, '-')
+        .replace(/[^\w-]/g, '')
+        .replace(/--+/g, '-')
+        .trim('-');
+}
+
+// Функция для открытия страницы скина
+function openSkinDetails(skinName) {
+    const slug = createSlug(skinName);
+    // Проверяем, существует ли URL для деталей скина
+    if (typeof window.skinDetailBaseUrl !== 'undefined') {
+        window.location.href = window.skinDetailBaseUrl.replace('{slug}', slug);
+    } else {
+        // Если нет базового URL, используем относительный путь
+        window.location.href = `/skin/${slug}/`;
+    }
+}
+        // Функция для применения фильтров
+        function applyFilters() {
+            filteredItems = itemsData.filter(item => {
+                // Поиск по названию
+                if (currentFilters.search) {
+                    const searchLower = currentFilters.search.toLowerCase();
+                    if (!item.name.toLowerCase().includes(searchLower) &&
+                        !item.hash_name.toLowerCase().includes(searchLower)) {
+                        return false;
+                    }
+                }
+
+                // Фильтр по цене
+                if (currentFilters.priceMin !== null && item.price.lowest_price < currentFilters.priceMin) {
+                    return false;
+                }
+                if (currentFilters.priceMax !== null && item.price.lowest_price > currentFilters.priceMax) {
+                    return false;
+                }
+
+                // Фильтр по прибыли
+                if (currentFilters.profitMin !== null && item.profit < currentFilters.profitMin) {
+                    return false;
+                }
+                if (currentFilters.profitMax !== null && item.profit > currentFilters.profitMax) {
+                    return false;
+                }
+
+                // Фильтр по ликвидности
+                if (currentFilters.liquidity) {
+                    const level = getLiquidityLevel(item.liquidity);
+                    if (level !== currentFilters.liquidity) {
+                        return false;
+                    }
+                }
+
+                // Фильтр по категории
+                if (currentFilters.category && item.category !== currentFilters.category) {
+                    return false;
+                }
+
+                // Фильтр по обновлению (заглушка)
+                if (currentFilters.updated) {
+                    // Здесь должна быть логика фильтрации по дате
+                }
+
+                return true;
+            });
+
+            // Сортировка
+            sortItems();
+
+            // Обновление интерфейса
+            updateUI();
+        }
+
+        // Функция для сортировки
+        function sortItems() {
+            filteredItems.sort((a, b) => {
+                switch (currentFilters.sortBy) {
+                    case 'profit_desc':
+                        return b.profit - a.profit;
+                    case 'profit_asc':
+                        return a.profit - b.profit;
+                    case 'price_desc':
+                        return b.price.lowest_price - a.price.lowest_price;
+                    case 'price_asc':
+                        return a.price.lowest_price - b.price.lowest_price;
+                    case 'liquidity_desc':
+                        return b.liquidity - a.liquidity;
+                    case 'name_asc':
+                        return a.name.localeCompare(b.name);
+                    default:
+                        return 0;
+                }
+            });
+        }
+
+        // Функция для добавления предмета в кошелек
+        function addToWallet(item) {
+            // Получаем текущие предметы из localStorage
+            let walletItems = JSON.parse(localStorage.getItem('walletItems') || '[]');
+
+            // Проверяем, не добавлен ли уже этот предмет
+            const alreadyAdded = walletItems.some(walletItem =>
+                walletItem.id === item.id
+            );
+
+            if (alreadyAdded) {
+                showNotification('Этот предмет уже добавлен в ваш кошелек!', 'warning');
+                return;
+            }
+
+            // Создаем объект предмета для кошелька
+            const walletItem = {
+                id: item.id,
+                name: item.name,
+                hash_name: item.hash_name,
+                image: item.image,
+                url: item.url,
+                price: item.price.lowest_price,
+                addedDate: new Date().toISOString(),
+                currentPrice: item.price.lowest_price,
+                profit: item.profit,
+                category: item.category
+            };
+
+            // Добавляем предмет в кошелек
+            walletItems.push(walletItem);
+
+            // Сохраняем в localStorage
+            localStorage.setItem('walletItems', JSON.stringify(walletItems));
+
+            showNotification(`"${item.name}" добавлен в ваш инвестиционный кошелек!`, 'success');
+        }
 
         // Функция для отображения предметов в таблице
         function renderItemsTable() {
             const tableBody = document.getElementById('items-table');
             tableBody.innerHTML = '';
 
-            itemsData.forEach(item => {
+            // Рассчитываем индексы для текущей страницы
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageItems = filteredItems.slice(startIndex, endIndex);
+
+            if (pageItems.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <i class="fas fa-search"></i>
+                                <h3>Предметы не найдены</h3>
+                                <p>Попробуйте изменить параметры фильтрации или поисковый запрос</p>
+                                <button class="btn-secondary" onclick="resetFilters()" style="margin-top: 20px;">
+                                    <i class="fas fa-redo"></i>
+                                    Сбросить фильтры
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            pageItems.forEach(item => {
+                const liquidityLevel = getLiquidityLevel(item.liquidity);
+                const liquidityPercent = `${item.liquidity}%`;
+                const isAuthenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
+
+                // Экранируем кавычки в имени для использования в onclick
+                const escapedName = item.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
                 const row = document.createElement('tr');
+                row.className = 'fade-in';
 
                 row.innerHTML = `
                     <td>
                         <div class="item-col">
-                            <img src="${item.image}" alt="${item.name}" class="item-image" onerror="this.src='https://via.placeholder.com/48x48/2a2f3d/8a94a6?text=CS'">
+                            <img src="${item.image}" alt="${item.name}" class="item-image"
+                                 onerror="this.src='https://via.placeholder.com/64x64/2a2f3d/8a94a6?text=CS'">
                             <div class="item-info">
                                 <div class="item-name">${item.name}</div>
-                                <div class="item-hash">${item.hash_name}</div>
+                                <div class="item-category">${getCategoryName(item.category)}</div>
                             </div>
                         </div>
                     </td>
-                    <td class="price-col lowest-price">${item.price.lowest_price}</td>
-                    <td class="price-col median-price">${item.price.median_price}</td>
-                    <td class="volume-col">${item.price.volume}</td>
+                    <td class="price-col lowest-price">${formatPrice(item.price.lowest_price)}</td>
+                    <td class="price-col median-price">${formatPrice(item.price.median_price)}</td>
+                    <td class="profit-col ${item.profit >= 0 ? 'positive' : 'negative'}">
+                        ${item.profit >= 0 ? '+' : ''}${item.profit.toFixed(1)}%
+                    </td>
+                    <td>
+                        <div class="liquidity-col">
+                            <span>${liquidityPercent}</span>
+                            <div class="liquidity-bar">
+                                <div class="liquidity-fill ${liquidityLevel}" style="width: ${item.liquidity}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="volume-col">${formatNumber(item.price.volume)}</td>
                     <td class="action-col">
-                        <a href="${item.url}" target="_blank" class="btn-view">На Steam</a>
+                        <a href="${item.url}" target="_blank" class="btn-action btn-steam">
+                            <i class="fab fa-steam"></i> Steam
+                        </a>
+                        <button class="btn-action btn-details" onclick="openSkinDetails('${escapedName}')">
+                            <i class="fas fa-chart-line"></i> Детали
+                        </button>
+                        <button class="btn-action btn-wallet ${isAuthenticated ? '' : 'disabled'}"
+                                onclick="${isAuthenticated ? `addToWallet(${JSON.stringify(item)})` : 'showLoginAlert()'}">
+                            <i class="fas fa-wallet"></i> В кошелек
+                        </button>
                     </td>
                 `;
 
@@ -550,15 +1563,259 @@
             });
         }
 
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', renderItemsTable);
+        // Функция для получения названия категории
+        function getCategoryName(category) {
+            const categories = {
+                'knife': 'Ножи',
+                'glove': 'Перчатки',
+                'weapon': 'Оружие',
+                'case': 'Кейсы',
+                'sticker': 'Стикеры',
+                'agent': 'Агенты'
+            };
+            return categories[category] || 'Другое';
+        }
 
-        // Обработчики для фильтров (заглушка)
-        document.querySelectorAll('.filter-input').forEach(input => {
-            input.addEventListener('input', function() {
-                console.log('Фильтр изменен:', this.value);
-                // Здесь будет логика фильтрации
+        // Функция для обновления пагинации
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+            const paginationPages = document.getElementById('pagination-pages');
+            paginationPages.innerHTML = '';
+
+            // Кнопка "Назад"
+            document.getElementById('prev-page').disabled = currentPage === 1;
+
+            // Кнопка "Вперед"
+            document.getElementById('next-page').disabled = currentPage === totalPages || totalPages === 0;
+
+            // Создаем кнопки страниц
+            const maxPages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));
+            let endPage = Math.min(totalPages, startPage + maxPages - 1);
+
+            if (endPage - startPage + 1 < maxPages) {
+                startPage = Math.max(1, endPage - maxPages + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `pagination-page ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => {
+                    currentPage = i;
+                    updateUI();
+                };
+                paginationPages.appendChild(pageBtn);
+            }
+
+            // Обновляем счетчик отфильтрованных предметов
+            const filteredCount = filteredItems.length;
+            const totalCount = itemsData.length;
+            document.getElementById('filtered-items-count').textContent =
+                `${filteredCount} из ${formatNumber(totalCount)} предметов`;
+        }
+
+        // Функция для обновления всего интерфейса
+        function updateUI() {
+            renderItemsTable();
+            updatePagination();
+            updateActiveFiltersCount();
+
+            // Прокручиваем к началу таблицы
+            document.querySelector('.comparison-section').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
             });
+        }
+
+        // Функция для сброса фильтров
+        function resetFilters() {
+            // Сброс значений фильтров
+            document.getElementById('search-input').value = '';
+            document.getElementById('price-min').value = '';
+            document.getElementById('price-max').value = '';
+            document.getElementById('profit-min').value = '';
+            document.getElementById('profit-max').value = '';
+            document.getElementById('liquidity-select').value = '';
+            document.getElementById('category-select').value = '';
+            document.getElementById('trade-type').value = '';
+            document.getElementById('updated-select').value = '';
+            document.getElementById('sort-by').value = 'profit_desc';
+
+            // Сброс состояния
+            currentFilters = {
+                search: '',
+                priceMin: null,
+                priceMax: null,
+                profitMin: null,
+                profitMax: null,
+                liquidity: '',
+                category: '',
+                tradeType: '',
+                updated: '',
+                sortBy: 'profit_desc'
+            };
+
+            // Применение фильтров
+            applyFilters();
+            showNotification('Фильтры сброшены', 'info');
+        }
+
+        // Функция для показа уведомления
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#00d09c' : type === 'warning' ? '#ff9500' : type === 'error' ? '#ff4757' : '#4f7bff'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: 500;
+                font-size: 14px;
+            `;
+
+            const icon = type === 'success' ? 'check-circle' :
+                        type === 'warning' ? 'exclamation-triangle' :
+                        type === 'error' ? 'exclamation-circle' : 'info-circle';
+
+            notification.innerHTML = `
+                <i class="fas fa-${icon}"></i>
+                ${message}
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out forwards';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+
+            // Добавляем стили для анимации
+            if (!document.querySelector('#notification-styles')) {
+                const style = document.createElement('style');
+                style.id = 'notification-styles';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from {
+                            transform: translateX(100%);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                    }
+                    @keyframes slideOut {
+                        from {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                        to {
+                            transform: translateX(100%);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        // Функция для показа предупреждения о необходимости входа
+        function showLoginAlert() {
+            showNotification('Для добавления предметов в инвестиционный кошелек необходимо войти через Steam!', 'warning');
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Настройка переключения фильтров
+            const filtersToggle = document.getElementById('filters-toggle');
+            const filtersGrid = document.getElementById('filters-grid');
+
+            filtersToggle.addEventListener('click', () => {
+                const isVisible = filtersGrid.style.display === 'grid';
+                filtersGrid.style.display = isVisible ? 'none' : 'grid';
+                filtersToggle.innerHTML = isVisible ?
+                    '<i class="fas fa-sliders-h"></i> Фильтры' :
+                    '<i class="fas fa-times"></i> Скрыть фильтры';
+                filtersToggle.innerHTML += `<span id="active-filters-count" style="background: #4f7bff; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px;">${document.getElementById('active-filters-count').textContent}</span>`;
+            });
+
+            // Кнопка поиска
+            document.getElementById('search-btn').addEventListener('click', () => {
+                currentFilters.search = document.getElementById('search-input').value;
+                currentPage = 1;
+                applyFilters();
+                showNotification('Поиск выполнен', 'info');
+            });
+
+            // Поиск по Enter
+            document.getElementById('search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    currentFilters.search = document.getElementById('search-input').value;
+                    currentPage = 1;
+                    applyFilters();
+                    showNotification('Поиск выполнен', 'info');
+                }
+            });
+
+            // Применение фильтров
+            document.getElementById('apply-filters').addEventListener('click', () => {
+                // Собираем значения фильтров
+                currentFilters.priceMin = document.getElementById('price-min').value ?
+                    parseFloat(document.getElementById('price-min').value) : null;
+                currentFilters.priceMax = document.getElementById('price-max').value ?
+                    parseFloat(document.getElementById('price-max').value) : null;
+                currentFilters.profitMin = document.getElementById('profit-min').value ?
+                    parseFloat(document.getElementById('profit-min').value) : null;
+                currentFilters.profitMax = document.getElementById('profit-max').value ?
+                    parseFloat(document.getElementById('profit-max').value) : null;
+                currentFilters.liquidity = document.getElementById('liquidity-select').value;
+                currentFilters.category = document.getElementById('category-select').value;
+                currentFilters.tradeType = document.getElementById('trade-type').value;
+                currentFilters.updated = document.getElementById('updated-select').value;
+                currentFilters.sortBy = document.getElementById('sort-by').value;
+
+                currentPage = 1;
+                applyFilters();
+                showNotification('Фильтры применены', 'success');
+            });
+
+            // Сброс фильтров
+            document.getElementById('reset-filters').addEventListener('click', resetFilters);
+
+            // Изменение количества элементов на странице
+            document.getElementById('page-size').addEventListener('change', (e) => {
+                itemsPerPage = parseInt(e.target.value);
+                currentPage = 1;
+                updateUI();
+            });
+
+            // Кнопки пагинации
+            document.getElementById('prev-page').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updateUI();
+                }
+            });
+
+            document.getElementById('next-page').addEventListener('click', () => {
+                const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updateUI();
+                }
+            });
+
+            // Инициализация
+            applyFilters();
         });
     </script>
 </body>

@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.95, maximum-scale=1.0">
+    <title>{{ skin.name }} - CS Market Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* === ОСНОВНЫЕ СТИЛИ === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0a0e17 0%, #1a1f2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 15px;
+            zoom: 0.95;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* === ШАПКА === */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #2a2f3d;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #4f7bff, #6c5ce7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #b0b7c3;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover {
+            color: #4f7bff;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .btn-login {
+            background: linear-gradient(90deg, #4f7bff, #6c5ce7);
+            color: white;
+            border: 1px solid #4f7bff;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(90deg, #3a6bff, #5a4bd9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 123, 255, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar-small {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid #4f7bff;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .user-avatar-small:hover {
+            transform: scale(1.1);
+            border-color: #66c0f4;
+        }
+
+        .username-link {
+            text-decoration: none;
+            color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .username-link:hover {
+            text-decoration: underline;
+            color: #66c0f4;
+        }
+
+        .btn-logout {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+            border: 1px solid #ff4757;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 71, 87, 0.2);
+        }
+
+        /* === ХЛЕБНЫЕ КРОШКИ === */
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 25px;
+            font-size: 13px;
+            color: #8a94a6;
+        }
+
+        .breadcrumbs a {
+            color: #8a94a6;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .breadcrumbs a:hover {
+            color: #4f7bff;
+        }
+
+        .breadcrumbs .separator {
+            color: #5a6275;
+            font-size: 11px;
+        }
+
+        .breadcrumbs .current {
+            color: #f0f0f0;
+            font-weight: 600;
+        }
+
+        /* === ОСНОВНОЙ КОНТЕНТ === */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* === ЛЕВАЯ КОЛОНКА === */
+        .skin-info {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* === КАРТОЧКИ === */
+        .card {
+            background: rgba(26, 31, 46, 0.7);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #2a2f3d;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: #4f7bff;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            background: rgba(79, 123, 255, 0.1);
+            color: #4f7bff;
+            border: 1px solid #4f7bff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-small:hover {
+            background: rgba(79, 123, 255, 0.2);
+        }
+
+        /* === ШАПКА СКИНА === */
+        .skin-header {
+            margin-bottom: 20px;
+        }
+
+        .skin-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #f0f0f0;
+        }
+
+        .skin-subtitle {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+            color: #8a94a6;
+        }
+
+        .skin-rarity {
+            padding: 4px 10px;
+            background: rgba(108, 92, 231, 0.1);
+            color: #6c5ce7;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stattrak-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            background: #3a3f4d;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #4f7bff;
+        }
+
+        .toggle-knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active .toggle-knob {
+            transform: translateX(20px);
+        }
+
+        /* === ВАРИАНТЫ ИЗНОСА === */
+        .wear-variants {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .wear-variants {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .wear-variants {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .wear-variant {
+            background: rgba(42, 47, 61, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #3a3f4d;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .wear-variant:hover {
+            border-color: #4f7bff;
+            transform: translateY(-2px);
+        }
+
+        .wear-variant.active {
+            border-color: #4f7bff;
+            background: rgba(79, 123, 255, 0.1);
+        }
+
+        .wear-name {
+            font-size: 11px;
+            color: #8a94a6;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .wear-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: #f0f0f0;
+            margin-bottom: 4px;
+        }
+
+        .wear-change {
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .wear-change.positive {
+            color: #00d09c;
+        }
+
+        .wear-change.negative {
+            color: #ff4757;
+        }
+
+        /* === ОПИСАНИЕ СКИНА === */
+        .skin-description {
+            margin-top: 15px;
+        }
+
+        .description-text {
+            color: #8a94a6;
+            line-height: 1.6;
+            font-size: 13px;
+        }
+
+        .show-more {
+            color: #4f7bff;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        /* === СТАТИСТИКА РЕЙТИНГА === */
+        .rating-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .rating-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #8a94a6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #4f7bff;
+            margin-bottom: 4px;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stat-change.positive {
+            color: #00d09c;
+        }
+
+        .rating-stars {
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+            margin-bottom: 6px;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 14px;
+        }
+
+        .star.empty {
+            color: #5a6275;
+        }
+
+        .votes {
+            font-size: 11px;
+            color: #8a94a6;
+        }
+
+        /* === ПРАВАЯ КОЛОНКА === */
+        .price-info {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* === ГРАФИК ЦЕН === */
+        .chart-container {
+            height: 250px;
+            margin-top: 15px;
+            position: relative;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .chart-periods {
+            display: flex;
+            gap: 8px;
+        }
+
+        .period-btn {
+            padding: 5px 10px;
+            background: rgba(42, 47, 61, 0.5);
+            border: 1px solid #3a3f4d;
+            color: #8a94a6;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.3s;
+        }
+
+        .period-btn.active {
+            background: #4f7bff;
+            color: white;
+            border-color: #4f7bff;
+        }
+
+        /* === СТАТИСТИКА ЦЕН === */
+        .price-statistics {
+            margin-top: 10px;
+        }
+
+        .current-price {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4f7bff;
+            margin-bottom: 15px;
+        }
+
+        .price-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .price-stat {
+            background: rgba(42, 47, 61, 0.5);
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #3a3f4d;
+        }
+
+        .price-stat-label {
+            font-size: 11px;
+            color: #8a94a6;
+            margin-bottom: 4px;
+        }
+
+        .price-stat-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f0f0f0;
+        }
+
+        /* === ИСТОРИЯ ЦЕН === */
+        .price-history {
+            margin-top: 10px;
+        }
+
+        .history-filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .history-filter {
+            padding: 5px 10px;
+            background: rgba(42, 47, 61, 0.5);
+            border: 1px solid #3a3f4d;
+            color: #8a94a6;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.3s;
+        }
+
+        .history-filter.active {
+            background: #4f7bff;
+            color: white;
+            border-color: #4f7bff;
+        }
+
+        .wear-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .wear-filter {
+            padding: 4px 10px;
+            background: rgba(42, 47, 61, 0.5);
+            border: 1px solid #3a3f4d;
+            color: #8a94a6;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.3s;
+        }
+
+        .wear-filter.active {
+            background: rgba(79, 123, 255, 0.1);
+            color: #4f7bff;
+            border-color: #4f7bff;
+        }
+
+        .quantity-chart {
+            margin-top: 20px;
+        }
+
+        .chart-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #8a94a6;
+            margin-bottom: 5px;
+        }
+
+        .chart-bar {
+            height: 8px;
+            background: #3a3f4d;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .chart-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4f7bff, #6c5ce7);
+            width: 65%;
+        }
+
+        .chart-average {
+            font-size: 11px;
+            color: #8a94a6;
+            text-align: center;
+        }
+
+        /* === ТЕГИ === */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            background: rgba(79, 123, 255, 0.1);
+            color: #4f7bff;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tag:hover {
+            background: rgba(79, 123, 255, 0.2);
+        }
+
+        /* === БЫСТРЫЕ ДЕЙСТВИЯ === */
+        .quick-actions {
+            margin-top: 20px;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* === ФУТЕР === */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #2a2f3d;
+            text-align: center;
+            color: #8a94a6;
+            font-size: 13px;
+        }
+
+        /* === УТИЛИТЫ === */
+        .positive {
+            color: #00d09c;
+        }
+
+        .negative {
+            color: #ff4757;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 15px;
+            color: #8a94a6;
+        }
+
+        .empty-state i {
+            font-size: 36px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* === АДАПТИВНОСТЬ === */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                zoom: 1;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 10px 0;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .skin-title h1 {
+                font-size: 22px;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .price-stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-section {
+                padding: 15px 10px;
+            }
+
+            .skin-title h1 {
+                font-size: 20px;
+            }
+
+            .card-title {
+                font-size: 16px;
+            }
+
+            .wear-variants {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Шапка сайта -->
+        <header class="header">
+            <a href="{% url 'home' %}" class="logo">CSMARKET ANALYTICS</a>
+            <nav class="nav-links">
+                <a href="{% url 'home' %}" style="color: #4f7bff; font-weight: 600;">Главная</a>
+                <a href="{% url 'steam_auth:comparison_price' %}">Сравнение цен</a>
+                <a href="#">Рынок</a>
+                <a href="{% url 'steam_auth:profile' %}">Профиль</a>
+                <a href="{% url 'steam_auth:pricing' %}">Тарифы</a>
+            </nav>
+
+            <div class="auth-buttons">
+                {% if user.is_authenticated %}
+                    <div class="user-info">
+                        {% if request.session.steam_data.avatar_medium %}
+                            <a href="{% url 'steam_auth:profile' %}" class="username-link">
+                                <img src="{{ request.session.steam_data.avatar_medium }}"
+                                     alt="Аватар"
+                                     class="user-avatar-small">
+                                <span>{{ request.session.steam_data.persona_name|default:user.username }}</span>
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'steam_auth:logout' %}" class="btn btn-logout">Выйти</a>
+                    </div>
+                {% else %}
+                    <a href="{% url 'steam_auth:login' %}" class="btn btn-login">
+                        <i class="fab fa-steam"></i> Войти через Steam
+                    </a>
+                {% endif %}
+            </div>
+        </header>
+
+        <!-- Хлебные крошки -->
+        <div class="breadcrumbs">
+            <a href="{% url 'home' %}">Главная</a>
+            <span class="separator">›</span>
+            <a href="#">МР9</a>
+            <span class="separator">›</span>
+            <span class="current">МР9 | Hydra (Factory New)</span>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="main-content">
+            <!-- Левая колонка -->
+            <div class="skin-info">
+                <!-- Информация о скине -->
+                <div class="card">
+                    <div class="skin-header">
+                        <div class="skin-title">
+                            <h1>МР9 | Hydra</h1>
+                            <div class="skin-subtitle">
+                                <span class="skin-rarity">Засекреченное</span>
+                                <span>Factory New</span>
+                            </div>
+                        </div>
+                        <div class="stattrak-toggle" id="stattrakToggle">
+                            <span style="font-size: 13px;">Показать предметы StatTrak</span>
+                            <div class="toggle-switch">
+                                <div class="toggle-knob"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Варианты износа -->
+                    <div class="wear-variants">
+                        <div class="wear-variant active" data-wear="factory-new">
+                            <div class="wear-name">Примо с завода</div>
+                            <div class="wear-price">$118.51</div>
+                            <div class="wear-change positive">+2.3%</div>
+                        </div>
+                        <div class="wear-variant" data-wear="minimal-wear">
+                            <div class="wear-name">Минимальный износ</div>
+                            <div class="wear-price">$30.44</div>
+                            <div class="wear-change negative">-1.2%</div>
+                        </div>
+                        <div class="wear-variant" data-wear="field-tested">
+                            <div class="wear-name">Полевые испытания</div>
+                            <div class="wear-price">$11.85</div>
+                            <div class="wear-change positive">+0.8%</div>
+                        </div>
+                        <div class="wear-variant" data-wear="well-worn">
+                            <div class="wear-name">Сильно изношено</div>
+                            <div class="wear-price">$7.32</div>
+                            <div class="wear-change positive">+3.1%</div>
+                        </div>
+                        <div class="wear-variant" data-wear="battle-scarred">
+                            <div class="wear-name">С боевыми следами</div>
+                            <div class="wear-price">$5.81</div>
+                            <div class="wear-change negative">-0.5%</div>
+                        </div>
+                    </div>
+
+                    <!-- Описание -->
+                    <div class="skin-description">
+                        <div class="description-text" id="descriptionText">
+                            Производимый в Швейцарии передовой пистолет-пулемёт МР9 – это эргономичное полимерное оружие, используемое частными охранными структурами по всему миру. Он был окрашен в гидравлическую тематику с использованием металлических красок и аэрографии. Коллекция «Гидра».
+                            <span id="moreText" style="display: none;">
+                                Этот уникальный дизайн был создан талантливым художником и является частью ограниченной серии. Скины коллекции «Гидра» известны своей детализацией и яркими цветами, что делает их популярными среди коллекционеров.
+                            </span>
+                        </div>
+                        <div class="show-more" id="showMore">Показать больше</div>
+                    </div>
+                </div>
+
+                <!-- Рейтинг и статистика -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Рейтинг и статистика</h3>
+                    </div>
+                    <div class="rating-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Рейтинг сообщества</div>
+                            <div class="rating-stars">
+                                <i class="fas fa-star star"></i>
+                                <i class="fas fa-star star"></i>
+                                <i class="fas fa-star star"></i>
+                                <i class="fas fa-star star"></i>
+                                <i class="fas fa-star-half-alt star"></i>
+                                <i class="far fa-star star empty"></i>
+                            </div>
+                            <div class="votes">872 Голоса</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">За последнюю неделю</div>
+                            <div class="stat-value">+$50.63</div>
+                            <div class="stat-change positive">74.60%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">За последний месяц</div>
+                            <div class="stat-value">+$69.50</div>
+                            <div class="stat-change positive">141.80%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Быстрые действия -->
+                <div class="card quick-actions">
+                    <h3 class="card-title">
+                        <i class="fas fa-bolt"></i>
+                        Быстрые действия
+                    </h3>
+                    <div class="action-buttons">
+                        <a href="{% url 'steam_auth:comparison_price' %}" class="btn btn-login" style="width: 100%; text-align: center; padding: 10px; font-size: 13px;">
+                            <i class="fas fa-exchange-alt"></i> Сравнить цены
+                        </a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'steam_auth:profile' %}" class="btn btn-small" style="width: 100%; text-align: center; padding: 10px; font-size: 13px;">
+                                <i class="fas fa-wallet"></i> Мой кошелек
+                            </a>
+                        {% else %}
+                            <div style="background: rgba(79, 123, 255, 0.1); padding: 12px; border-radius: 8px; margin-top: 5px;">
+                                <p style="color: #8a94a6; font-size: 12px; margin-bottom: 8px;">
+                                    Войдите для доступа к персональным функциям
+                                </p>
+                                <a href="{% url 'steam_auth:login' %}" class="btn btn-login" style="width: 100%; text-align: center; padding: 8px; font-size: 13px;">
+                                    <i class="fab fa-steam"></i> Войти через Steam
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Правая колонка -->
+            <div class="price-info">
+                <!-- График цен -->
+                <div class="card">
+                    <div class="chart-header">
+                        <h3 class="card-title">Статистика цен</h3>
+                        <div class="chart-periods">
+                            <button class="period-btn active" data-period="7d">7Д</button>
+                            <button class="period-btn" data-period="30d">1M</button>
+                            <button class="period-btn" data-period="90d">3M</button>
+                            <button class="period-btn" data-period="all">Все</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Детальная статистика -->
+                <div class="card">
+                    <div class="current-price">$118.51</div>
+                    <div class="price-statistics">
+                        <div class="price-stats-grid">
+                            <div class="price-stat">
+                                <div class="price-stat-label">7д изменение</div>
+                                <div class="price-stat-value positive">+$50.63 (74.60%)</div>
+                            </div>
+                            <div class="price-stat">
+                                <div class="price-stat-label">7д минимум</div>
+                                <div class="price-stat-value">$60.63</div>
+                            </div>
+                            <div class="price-stat">
+                                <div class="price-stat-label">7д максимум</div>
+                                <div class="price-stat-value">$76.05</div>
+                            </div>
+                            <div class="price-stat">
+                                <div class="price-stat-label">30д минимум</div>
+                                <div class="price-stat-value">$38.02</div>
+                            </div>
+                            <div class="price-stat">
+                                <div class="price-stat-label">30д максимум</div>
+                                <div class="price-stat-value">$60.63</div>
+                            </div>
+                            <div class="price-stat">
+                                <div class="price-stat-label">90д минимум</div>
+                                <div class="price-stat-value">$29.47</div>
+                            </div>
+                            <div class="price-stat">
+                                <div class="price-stat-label">90д максимум</div>
+                                <div class="price-stat-value">$48.52</div>
+                            </div>
+                            <div class="price-stat">
+                                <div class="price-stat-label">Исторический минимум</div>
+                                <div class="price-stat-value">$9.58</div>
+                            </div>
+                            <div class="price-stat">
+                                <div class="price-stat-label">Исторический максимум</div>
+                                <div class="price-stat-value">$124.83</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- История цен -->
+                <div class="card price-history">
+                    <div class="card-header">
+                        <h3 class="card-title">История цен</h3>
+                        <div class="history-filters">
+                            <button class="history-filter active" data-platform="all">Все</button>
+                            <button class="history-filter" data-platform="steam">Steam</button>
+                            <button class="history-filter" data-platform="skinport">Skinport</button>
+                            <button class="history-filter" data-platform="dmarket">DMarket</button>
+                        </div>
+                    </div>
+
+                    <div class="wear-filters">
+                        <button class="wear-filter active" data-wear="all">Все</button>
+                        <button class="wear-filter" data-wear="factory-new">Factory New</button>
+                        <button class="wear-filter" data-wear="minimal-wear">Minimal Wear</button>
+                        <button class="wear-filter" data-wear="field-tested">Field-Tested</button>
+                        <button class="wear-filter" data-wear="well-worn">Well-Worn</button>
+                        <button class="wear-filter" data-wear="battle-scarred">Battle-Scarred</button>
+                    </div>
+
+                    <div class="quantity-chart">
+                        <div class="chart-labels">
+                            <span>0</span>
+                            <span>10</span>
+                            <span>20</span>
+                            <span>30</span>
+                        </div>
+                        <div class="chart-bar">
+                            <div class="chart-fill" style="width: 65%"></div>
+                        </div>
+                        <div class="chart-average">Average ($38.97)</div>
+                    </div>
+
+                    <div class="tags-container">
+                        <span class="tag">Steam</span>
+                        <span class="tag">Skinport</span>
+                        <span class="tag">DMarket</span>
+                        <span class="tag">CS.Money</span>
+                        <span class="tag">Tradeit.gg</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Футер -->
+        <footer class="footer">
+            <p>© 2024 CS Market Analytics. Все данные предоставлены Steam Community Market и партнерами.</p>
+            <p style="margin-top: 8px; font-size: 12px;">
+                Обновлено: <strong>Только что</strong> | Отображено предметов: <strong>1</strong>
+            </p>
+            {% if user.is_authenticated %}
+                <p style="margin-top: 8px; font-size: 12px;">
+                    Вы вошли как: <strong>{{ request.session.steam_data.persona_name|default:user.username }}</strong>
+                </p>
+            {% endif %}
+        </footer>
+    </div>
+
+    <script>
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Переключение StatTrak
+            const statTrakToggle = document.getElementById('stattrakToggle');
+            const toggleSwitch = statTrakToggle.querySelector('.toggle-switch');
+
+            statTrakToggle.addEventListener('click', function() {
+                toggleSwitch.classList.toggle('active');
+                const isActive = toggleSwitch.classList.contains('active');
+                showNotification(`Режим StatTrak ${isActive ? 'включен' : 'выключен'}`);
+                updatePrices(isActive);
+            });
+
+            // Переключение вариантов износа
+            const wearVariants = document.querySelectorAll('.wear-variant');
+            wearVariants.forEach(variant => {
+                variant.addEventListener('click', function() {
+                    wearVariants.forEach(v => v.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const wear = this.dataset.wear;
+                    updateWearInfo(wear);
+                });
+            });
+
+            // Показать/скрыть больше текста
+            const showMoreBtn = document.getElementById('showMore');
+            const moreText = document.getElementById('moreText');
+
+            showMoreBtn.addEventListener('click', function() {
+                if (moreText.style.display === 'none') {
+                    moreText.style.display = 'inline';
+                    this.textContent = 'Показать меньше';
+                } else {
+                    moreText.style.display = 'none';
+                    this.textContent = 'Показать больше';
+                }
+            });
+
+            // Переключение периодов графика
+            const periodBtns = document.querySelectorAll('.period-btn');
+            periodBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    periodBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const period = this.dataset.period;
+                    updateChart(period);
+                });
+            });
+
+            // Фильтры истории цен
+            const historyFilters = document.querySelectorAll('.history-filter');
+            historyFilters.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    historyFilters.forEach(f => f.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Фильтры износа
+            const wearFilters = document.querySelectorAll('.wear-filter');
+            wearFilters.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    wearFilters.forEach(f => f.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Инициализация графика
+            initPriceChart();
+        });
+
+        // Инициализация графика цен
+        function initPriceChart() {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+
+            // Данные за 7 дней (по умолчанию)
+            const labels = ['27-09', '28-09', '29-09', '30-09', '01-10', '02-10', '03-10'];
+            const data = [79.09, 92.44, 76.79, 76.60, 79.31, 86.03, 85.72];
+
+            window.priceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Цена ($)',
+                        data: data,
+                        borderColor: '#4f7bff',
+                        backgroundColor: 'rgba(79, 123, 255, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#4f7bff',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 1,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(26, 31, 46, 0.9)',
+                            titleColor: '#f0f0f0',
+                            bodyColor: '#b0b7c3',
+                            borderColor: '#4f7bff',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return `$${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(42, 47, 61, 0.5)'
+                            },
+                            ticks: {
+                                color: '#8a94a6',
+                                font: {
+                                    size: 11
+                                },
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(42, 47, 61, 0.5)'
+                            },
+                            ticks: {
+                                color: '#8a94a6',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Обновление графика по периодам
+        function updateChart(period) {
+            const chart = window.priceChart;
+
+            let labels = [];
+            let data = [];
+
+            switch(period) {
+                case '7d':
+                    labels = ['27-09', '28-09', '29-09', '30-09', '01-10', '02-10', '03-10'];
+                    data = [79.09, 92.44, 76.79, 76.60, 79.31, 86.03, 85.72];
+                    break;
+
+                case '30d':
+                    labels = [];
+                    data = [];
+                    for (let i = 29; i >= 0; i--) {
+                        const date = new Date();
+                        date.setDate(date.getDate() - i);
+                        if (i % 4 === 0) {
+                            labels.push(date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }));
+                            data.push(Math.random() * 50 + 60);
+                        }
+                    }
+                    break;
+
+                case '90d':
+                    labels = [];
+                    data = [];
+                    for (let i = 89; i >= 0; i--) {
+                        const date = new Date();
+                        date.setDate(date.getDate() - i);
+                        if (i % 12 === 0) {
+                            labels.push(date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }));
+                            data.push(Math.random() * 70 + 30);
+                        }
+                    }
+                    break;
+
+                case 'all':
+                    labels = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен'];
+                    data = [29.47, 32.15, 38.02, 42.50, 48.52, 52.30, 60.63, 65.80, 118.51];
+                    break;
+            }
+
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = data;
+            chart.update();
+
+            showNotification(`График обновлен: ${period === '7d' ? '7 дней' : period === '30d' ? '30 дней' : period === '90d' ? '90 дней' : 'Вся история'}`);
+        }
+
+        // Обновление информации при смене износа
+        function updateWearInfo(wear) {
+            const wearData = {
+                'factory-new': {
+                    price: '$118.51',
+                    change: '+2.3%',
+                    changeClass: 'positive'
+                },
+                'minimal-wear': {
+                    price: '$30.44',
+                    change: '-1.2%',
+                    changeClass: 'negative'
+                },
+                'field-tested': {
+                    price: '$11.85',
+                    change: '+0.8%',
+                    changeClass: 'positive'
+                },
+                'well-worn': {
+                    price: '$7.32',
+                    change: '+3.1%',
+                    changeClass: 'positive'
+                },
+                'battle-scarred': {
+                    price: '$5.81',
+                    change: '-0.5%',
+                    changeClass: 'negative'
+                }
+            };
+
+            const data = wearData[wear];
+            if (data) {
+                // Обновляем текущую цену
+                document.querySelector('.current-price').textContent = data.price;
+                showNotification(`Выбран износ: ${getWearName(wear)}`);
+            }
+        }
+
+        // Обновление цен при включении StatTrak
+        function updatePrices(isStatTrak) {
+            const wearVariants = document.querySelectorAll('.wear-variant');
+            const statTrakMultiplier = 1.8; // Множитель для StatTrak цен
+
+            wearVariants.forEach(variant => {
+                const priceElement = variant.querySelector('.wear-price');
+                const currentPrice = parseFloat(priceElement.textContent.replace('$', ''));
+
+                let newPrice;
+                if (isStatTrak) {
+                    newPrice = currentPrice * statTrakMultiplier;
+                } else {
+                    newPrice = currentPrice / statTrakMultiplier;
+                }
+
+                priceElement.textContent = `$${newPrice.toFixed(2)}`;
+            });
+        }
+
+        // Вспомогательные функции
+        function getWearName(wear) {
+            const names = {
+                'factory-new': 'Примо с завода',
+                'minimal-wear': 'Минимальный износ',
+                'field-tested': 'Полевые испытания',
+                'well-worn': 'Сильно изношено',
+                'battle-scarred': 'С боевыми следами'
+            };
+            return names[wear] || wear;
+        }
+
+        function showNotification(message) {
+            // Создаем уведомление
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 15px;
+                right: 15px;
+                background: #4f7bff;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 6px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+                font-weight: 500;
+                font-size: 13px;
+            `;
+
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out forwards';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+
+            // Добавляем стили для анимации
+            if (!document.querySelector('#notification-styles')) {
+                const style = document.createElement('style');
+                style.id = 'notification-styles';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from {
+                            transform: translateX(100%);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                    }
+                    @keyframes slideOut {
+                        from {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                        to {
+                            transform: translateX(100%);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+    </script>
+</body>
+</html>

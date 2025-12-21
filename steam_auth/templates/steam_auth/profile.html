@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Профиль пользователя - CS Market Analysis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* === ОСНОВНЫЕ СТИЛИ (как в home) === */
+        /* === ОСНОВНЫЕ СТИЛИ === */
         * {
             margin: 0;
             padding: 0;
@@ -134,85 +135,174 @@
             background: rgba(255, 71, 87, 0.2);
         }
 
-        /* === ОСНОВНОЙ КОНТЕНТ ПРОФИЛЯ === */
-        .profile-header {
-            text-align: center;
-            margin-bottom: 40px;
+        /* === ОСНОВНОЙ КОНТЕНТ === */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
         }
 
-        .profile-header h1 {
-            font-size: 36px;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #66c0f4, #4f7bff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .profile-header p {
-            color: #8a94a6;
-            font-size: 18px;
+        /* === ЛЕВАЯ КОЛОНКА: ПРОФИЛЬ === */
+        .profile-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
         }
 
-        /* === КАРТОЧКА ПРОФИЛЯ === */
         .profile-card {
             background: rgba(26, 31, 46, 0.7);
             border-radius: 16px;
             padding: 30px;
             border: 1px solid #2a2f3d;
-            margin-bottom: 30px;
         }
 
-        .profile-info {
-            display: flex;
-            gap: 30px;
-            align-items: flex-start;
-            margin-bottom: 30px;
+        .profile-header {
+            text-align: center;
+            margin-bottom: 25px;
         }
 
-        @media (max-width: 768px) {
-            .profile-info {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
+        .profile-avatar-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
         }
 
-        .profile-avatar-large {
-            width: 184px;
-            height: 184px;
-            border-radius: 12px;
+        .profile-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
             border: 3px solid #4f7bff;
             object-fit: cover;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
-        .profile-details {
-            flex: 1;
+        .profile-status-badge {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #00d09c;
+            border: 2px solid #1a1f2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
         }
 
-        .profile-details h2 {
-            font-size: 28px;
-            margin-bottom: 15px;
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
             color: #f0f0f0;
+            margin-bottom: 5px;
         }
 
-        .profile-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+        .profile-level {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(79, 123, 255, 0.1);
+            color: #4f7bff;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid rgba(79, 123, 255, 0.3);
+        }
+
+        /* === ИНФОРМАЦИЯ STEAM === */
+        .steam-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #2a2f3d;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #8a94a6;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #f0f0f0;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .steam-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             margin-top: 20px;
         }
 
-        .stat-card {
-            background: rgba(42, 47, 61, 0.8);
-            border-radius: 10px;
+        /* === СТАТИСТИКА === */
+        .stats-card {
+            background: rgba(26, 31, 46, 0.7);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #2a2f3d;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .stats-title {
+            font-size: 20px;
+            color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .stat-item {
+            background: rgba(42, 47, 61, 0.5);
+            border-radius: 12px;
             padding: 20px;
             text-align: center;
             border: 1px solid #3a3f4d;
+            transition: all 0.3s;
+        }
+
+        .stat-item:hover {
+            border-color: #4f7bff;
+            transform: translateY(-3px);
         }
 
         .stat-value {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
             color: #4f7bff;
             margin-bottom: 5px;
@@ -220,70 +310,156 @@
 
         .stat-label {
             color: #8a94a6;
-            font-size: 14px;
+            font-size: 13px;
         }
 
-        /* === ИНФОРМАЦИЯ О СТИМ === */
-        .steam-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+        .stat-change {
+            font-size: 12px;
+            margin-top: 5px;
+            font-weight: 600;
         }
 
-        .info-item {
+        .stat-change.positive {
+            color: #00d09c;
+        }
+
+        .stat-change.negative {
+            color: #ff4757;
+        }
+
+        /* === ПРАВАЯ КОЛОНКА: ОСНОВНОЙ КОНТЕНТ === */
+        .profile-main-content {
             display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #2a2f3d;
+            flex-direction: column;
+            gap: 30px;
         }
 
-        .info-label {
-            color: #8a94a6;
-        }
-
-        .info-value {
-            color: #f0f0f0;
-            font-weight: 500;
-        }
-
-        /* === ИНВЕНТАРЬ === */
-        .inventory-section {
+        /* === ИНВЕСТИЦИОННЫЙ КОШЕЛЕК === */
+        .wallet-card {
             background: rgba(26, 31, 46, 0.7);
             border-radius: 16px;
-            padding: 25px;
+            padding: 30px;
             border: 1px solid #2a2f3d;
-            margin-bottom: 30px;
         }
 
-        .section-title {
-            font-size: 24px;
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            color: #f0f0f0;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .section-title::before {
-            content: "▸";
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(79, 123, 255, 0.1);
             color: #4f7bff;
+            border: 1px solid #4f7bff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-icon:hover {
+            background: rgba(79, 123, 255, 0.2);
+        }
+
+        .btn-icon.success {
+            background: rgba(0, 208, 156, 0.1);
+            color: #00d09c;
+            border-color: #00d09c;
+        }
+
+        .btn-icon.success:hover {
+            background: rgba(0, 208, 156, 0.2);
+        }
+
+        .wallet-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .wallet-stats {
+            background: rgba(42, 47, 61, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #3a3f4d;
+        }
+
+        .wallet-stats-label {
+            color: #8a94a6;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .wallet-stats-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4f7bff;
+        }
+
+        .wallet-stats-change {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .wallet-items-container {
+            min-height: 200px;
+        }
+
+        .wallet-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        /* === ИНВЕНТАРЬ === */
+        .inventory-card {
+            background: rgba(26, 31, 46, 0.7);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid #2a2f3d;
+        }
+
+        .inventory-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
         }
 
         .game-tabs {
             display: flex;
             gap: 10px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
         }
 
         .game-tab {
-            padding: 10px 20px;
-            background: rgba(42, 47, 61, 0.8);
+            padding: 8px 16px;
+            background: rgba(42, 47, 61, 0.5);
             border: 1px solid #3a3f4d;
             border-radius: 8px;
             color: #b0b7c3;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 14px;
         }
 
         .game-tab.active {
@@ -293,70 +469,104 @@
         }
 
         .game-tab:hover:not(.active) {
-            background: rgba(42, 47, 61, 1);
+            background: rgba(42, 47, 61, 0.8);
             border-color: #4f7bff;
         }
 
-        .items-grid {
+        .inventory-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
+            min-height: 300px;
         }
 
-        .inventory-item-card {
+        /* === ЭЛЕМЕНТЫ ИНВЕНТАРЯ === */
+        .item-card {
             background: rgba(42, 47, 61, 0.8);
             border-radius: 12px;
             padding: 15px;
             border: 1px solid #3a3f4d;
-            transition: transform 0.3s, border-color 0.3s;
+            transition: all 0.3s;
             position: relative;
         }
 
-        .inventory-item-card:hover {
-            transform: translateY(-5px);
+        .item-card:hover {
             border-color: #4f7bff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
-        .item-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
+        .item-image-wrapper {
+            position: relative;
+            margin-bottom: 12px;
         }
 
         .item-image {
-            width: 64px;
-            height: 64px;
+            width: 100%;
+            height: 120px;
             border-radius: 8px;
-            border: 2px solid #3a3f4d;
             object-fit: cover;
+            border: 2px solid #3a3f4d;
+        }
+
+        .item-quantity {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .item-details {
+            margin-bottom: 15px;
         }
 
         .item-name {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             color: #f0f0f0;
+            margin-bottom: 5px;
+            line-height: 1.4;
+            height: 40px;
+            overflow: hidden;
         }
 
-        .item-game {
+        .item-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-size: 12px;
             color: #8a94a6;
-            margin-top: 5px;
+        }
+
+        .item-type {
+            padding: 3px 8px;
+            background: rgba(42, 47, 61, 0.5);
+            border-radius: 6px;
         }
 
         .item-actions {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 8px;
         }
 
-        .btn-small {
-            padding: 8px 15px;
-            font-size: 14px;
-            border-radius: 6px;
-            text-decoration: none;
-            text-align: center;
+        .action-btn {
             flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
 
         .btn-view {
@@ -369,72 +579,17 @@
             background: rgba(79, 123, 255, 0.2);
         }
 
-        .btn-sell {
+        .btn-add {
             background: rgba(0, 208, 156, 0.1);
             color: #00d09c;
             border: 1px solid #00d09c;
         }
 
-        .btn-sell:hover {
+        .btn-add:hover {
             background: rgba(0, 208, 156, 0.2);
         }
 
-        /* === ДЕЙСТВИЯ === */
-        .actions-section {
-            background: rgba(26, 31, 46, 0.7);
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid #2a2f3d;
-        }
-
-        .actions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .action-card {
-            background: rgba(42, 47, 61, 0.8);
-            border-radius: 12px;
-            padding: 25px;
-            border: 1px solid #3a3f4d;
-            text-align: center;
-            transition: all 0.3s;
-        }
-
-        .action-card:hover {
-            border-color: #4f7bff;
-            transform: translateY(-3px);
-        }
-
-        .action-icon {
-            font-size: 32px;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .action-title {
-            font-size: 18px;
-            margin-bottom: 10px;
-            color: #f0f0f0;
-        }
-
-        .action-description {
-            color: #8a94a6;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        /* === ФУТЕР === */
-        .footer {
-            margin-top: 50px;
-            padding-top: 30px;
-            border-top: 1px solid #2a2f3d;
-            text-align: center;
-            color: #8a94a6;
-        }
-
-        /* === УТИЛИТЫ === */
+        /* === ПУСТЫЕ СОСТОЯНИЯ === */
         .empty-state {
             text-align: center;
             padding: 50px 20px;
@@ -442,16 +597,17 @@
             grid-column: 1 / -1;
         }
 
-        .empty-state img {
-            width: 100px;
-            opacity: 0.5;
+        .empty-state-icon {
+            font-size: 48px;
             margin-bottom: 20px;
+            opacity: 0.5;
         }
 
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 50px 20px;
             color: #8a94a6;
+            grid-column: 1 / -1;
         }
 
         .loading-spinner {
@@ -469,13 +625,31 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* === АДАПТИВНОСТЬ === */
-        @media (max-width: 1024px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-            }
+        /* === ФУТЕР === */
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #2a2f3d;
+            text-align: center;
+            color: #8a94a6;
         }
 
+        /* === ДОПОЛНИТЕЛЬНЫЕ СТИЛИ === */
+        .value-positive {
+            color: #00d09c;
+        }
+
+        .value-negative {
+            color: #ff4757;
+        }
+
+        .country-flag {
+            vertical-align: middle;
+            margin-right: 5px;
+            border-radius: 2px;
+        }
+
+        /* === АДАПТИВНОСТЬ === */
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -487,13 +661,108 @@
                 justify-content: center;
             }
 
-            .items-grid {
+            .main-content {
+                gap: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .wallet-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .inventory-grid {
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .inventory-controls {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .game-tabs {
+                flex-wrap: wrap;
             }
 
             .user-info {
                 flex-direction: column;
                 gap: 10px;
+            }
+        }
+
+        /* Стили для кнопок действий */
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .btn-view {
+            background: rgba(79, 123, 255, 0.1);
+            color: #4f7bff;
+            border: 1px solid #4f7bff;
+        }
+
+        .btn-view:hover {
+            background: rgba(79, 123, 255, 0.2);
+        }
+
+        .btn-add {
+            background: rgba(0, 208, 156, 0.1);
+            color: #00d09c;
+            border: 1px solid #00d09c;
+        }
+
+        .btn-add:hover {
+            background: rgba(0, 208, 156, 0.2);
+        }
+
+        /* Стиль для кнопки Детали */
+        .action-btn[style*="background: rgba(108, 92, 231, 0.1)"] {
+            background: rgba(108, 92, 231, 0.1);
+            color: #6c5ce7;
+            border: 1px solid #6c5ce7;
+        }
+
+        .action-btn[style*="background: rgba(108, 92, 231, 0.1)"]:hover {
+            background: rgba(108, 92, 231, 0.2);
+        }
+
+        /* Адаптивность для кнопок действий */
+        @media (max-width: 480px) {
+            .item-actions {
+                flex-wrap: wrap;
+            }
+
+            .action-btn {
+                min-width: calc(50% - 4px);
+                margin-bottom: 4px;
+            }
+        }
+        @media (max-width: 480px) {
+            .profile-avatar {
+                width: 120px;
+                height: 120px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .wallet-stats-value {
+                font-size: 20px;
             }
         }
     </style>
@@ -505,209 +774,252 @@
             <a href="{% url 'home' %}" class="logo">CSMARKET ANALYTICS</a>
             <nav class="nav-links">
                 <a href="{% url 'home' %}">Главная</a>
-                <a href="#">Сравнение цен</a>
+                <a href="{% url 'steam_auth:comparison_price' %}">Сравнение цен</a>
                 <a href="#">Рынок</a>
-                <a href="#">Аналитика</a>
-                <a href="#">Новости</a>
+                <a href="{% url 'steam_auth:profile' %}" style="color: #4f7bff; font-weight: 600;">Профиль</a>
+                <a href="{% url 'steam_auth:pricing' %}">Тарифы</a>
             </nav>
 
             <div class="auth-buttons">
                 {% if user.is_authenticated %}
-                    <!-- Показываем информацию о пользователе если авторизован -->
                     <div class="user-info">
-                        {% if request.session.steam_data.avatar_medium %}
-                            <a href="{% url 'profile' %}" class="username-link">
-                                <img src="{{ request.session.steam_data.avatar_medium }}"
+                        {% if steam_data.avatar_medium %}
+                            <a href="{% url 'steam_auth:profile' %}" class="username-link">
+                                <img src="{{ steam_data.avatar_medium }}"
                                      alt="Аватар"
-                                     class="user-avatar-small"
-                                     title="Перейти в профиль">
+                                     class="user-avatar-small">
+                                <span>{{ steam_data.persona_name|default:user.username }}</span>
                             </a>
                         {% endif %}
-
-                        <a href="{% url 'profile' %}" class="username-link">
-                            <span>
-                                <!-- Показываем никнейм из Steam, если есть, иначе username -->
-                                {% if request.session.steam_data.persona_name %}
-                                    {{ request.session.steam_data.persona_name }}
-                                {% else %}
-                                    {{ user.username }}
-                                {% endif %}
-                                <span style="color: #66c0f4; margin-left: 5px;">▶</span>
-                            </span>
-                        </a>
-
                         <a href="{% url 'steam_auth:logout' %}" class="btn btn-logout">Выйти</a>
                     </div>
                 {% else %}
-                    <!-- Показываем кнопку входа если не авторизован -->
                     <a href="{% url 'steam_auth:login' %}" class="btn btn-login">Войти через Steam</a>
                 {% endif %}
             </div>
         </header>
 
-        <!-- Заголовок профиля -->
-        <section class="profile-header">
-            <h1>👤 Профиль пользователя</h1>
-            <p>Управляйте вашими данными и инвентарем</p>
-        </section>
-
         <!-- Основной контент -->
-        <div class="grid-container">
-            <!-- Левая колонка: информация профиля -->
-            <main class="profile-card">
-                <div class="profile-info">
-                    {% if steam_data.avatar_full %}
-                        <img src="{{ steam_data.avatar_full }}"
-                             alt="Аватар Steam"
-                             class="profile-avatar-large">
-                    {% elif steam_data.avatar_medium %}
-                        <img src="{{ steam_data.avatar_medium }}"
-                             alt="Аватар Steam"
-                             class="profile-avatar-large">
-                    {% endif %}
-
-                    <div class="profile-details">
-                        <h2>{{ steam_data.persona_name|default:user.username }}</h2>
-
-                        <div class="steam-info">
-                            <div class="info-item">
-                                <span class="info-label">Steam ID:</span>
-                                <span class="info-value">{{ steam_data.steam_id }}</span>
-                            </div>
-
-                            {% if steam_data.real_name %}
-                            <div class="info-item">
-                                <span class="info-label">Реальное имя:</span>
-                                <span class="info-value">{{ steam_data.real_name }}</span>
-                            </div>
+        <div class="main-content">
+            <!-- Левая колонка: профиль -->
+            <div class="profile-sidebar">
+                <!-- Карточка профиля -->
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar-container">
+                            {% if steam_data.avatar_full %}
+                                <img src="{{ steam_data.avatar_full }}" alt="Аватар" class="profile-avatar">
+                            {% else %}
+                                <img src="https://via.placeholder.com/140/1a1f2e/4f7bff?text=CS" alt="Аватар" class="profile-avatar">
                             {% endif %}
-
-                            {% if steam_data.country_code %}
-                            <div class="info-item">
-                                <span class="info-label">Страна:</span>
-                                <span class="info-value">{{ steam_data.country_code }}</span>
-                            </div>
-                            {% endif %}
-
-                            <div class="info-item">
-                                <span class="info-label">Статус профиля:</span>
-                                <span class="info-value">
-                                    {% if steam_data.profile_state == 1 %}
-                                        <span style="color: #00d09c;">✓ Настроен</span>
-                                    {% else %}
-                                        <span style="color: #ff4757;">Не настроен</span>
-                                    {% endif %}
-                                </span>
+                            <div class="profile-status-badge">
+                                <i class="fas fa-check"></i>
                             </div>
                         </div>
+                        <h2 class="profile-name">{{ steam_data.persona_name|default:user.username }}</h2>
+                        <div class="profile-level">Уровень 5</div>
+                    </div>
 
-                        {% if steam_data.profile_url %}
-                        <div style="margin-top: 20px;">
-                            <a href="{{ steam_data.profile_url }}"
-                               target="_blank"
-                               class="btn btn-login"
-                               style="display: inline-flex; align-items: center; gap: 8px;">
-                                <span>🌐 Открыть профиль Steam</span>
-                            </a>
+                    <div class="steam-info">
+                        <div class="info-row">
+                            <div class="info-label">
+                                <i class="fas fa-id-card"></i>
+                                <span>Steam ID</span>
+                            </div>
+                            <div class="info-value">{{ steam_data.steam_id|default:"Не указан" }}</div>
+                        </div>
+
+                        {% if steam_data.real_name %}
+                        <div class="info-row">
+                            <div class="info-label">
+                                <i class="fas fa-user"></i>
+                                <span>Имя</span>
+                            </div>
+                            <div class="info-value">{{ steam_data.real_name }}</div>
                         </div>
                         {% endif %}
+
+                        {% if steam_data.country_code %}
+                        <div class="info-row">
+                            <div class="info-label">
+                                <i class="fas fa-globe"></i>
+                                <span>Страна</span>
+                            </div>
+                            <div class="info-value">
+                                <img src="https://flagcdn.com/20x15/{{ steam_data.country_code|lower }}.png"
+                                     alt="{{ steam_data.country_code }}"
+                                     class="country-flag">
+                                {{ steam_data.country_code }}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="info-row">
+                            <div class="info-label">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Приватность</span>
+                            </div>
+                            <div class="info-value">
+                                {% if steam_data.community_visibility == 3 %}
+                                    <span class="value-positive">🌐 Публичный</span>
+                                {% elif steam_data.community_visibility == 2 %}
+                                    <span style="color: #ffc107;">👥 Друзья</span>
+                                {% elif steam_data.community_visibility == 1 %}
+                                    <span class="value-negative">🔒 Приватный</span>
+                                {% else %}
+                                    Неизвестно
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>На сайте</span>
+                            </div>
+                            <div class="info-value">{{ user.date_joined|date:"d.m.Y" }}</div>
+                        </div>
+                    </div>
+
+                    <div class="steam-actions">
+                        {% if steam_data.profile_url %}
+                        <a href="{{ steam_data.profile_url }}" target="_blank" class="btn btn-login">
+                            <i class="fas fa-external-link-alt"></i> Профиль Steam
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'steam_auth:logout' %}" class="btn btn-logout">
+                            <i class="fas fa-sign-out-alt"></i> Выйти
+                        </a>
                     </div>
                 </div>
 
-                <!-- Статистика профиля -->
-                <div class="profile-stats">
-                    <div class="stat-card">
-                        <div class="stat-value">{{ user_stats.items_count|default:"0" }}</div>
-                        <div class="stat-label">Всего предметов</div>
+                <!-- Статистика -->
+                <div class="stats-card">
+                    <div class="stats-header">
+                        <h3 class="stats-title">
+                            <i class="fas fa-chart-line"></i>
+                            Статистика
+                        </h3>
+                        <span class="profile-level">Обновлено сегодня</span>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-value">{{ user_stats.games_count|default:"0" }}</div>
-                        <div class="stat-label">Игр в инвентаре</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">{{ user_stats.trades_count|default:"0" }}</div>
-                        <div class="stat-label">Совершенных сделок</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">{{ user.date_joined|date:"d.m.Y" }}</div>
-                        <div class="stat-label">Дата регистрации</div>
+
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="total-items">0</div>
+                            <div class="stat-label">Всего предметов</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="tradable-items">0</div>
+                            <div class="stat-label">Можно продать</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="inventory-value">$0</div>
+                            <div class="stat-label">Стоимость</div>
+                            <div class="stat-change positive" id="value-change">+0%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="games-count">1</div>
+                            <div class="stat-label">Активных игр</div>
+                        </div>
                     </div>
                 </div>
-            </main>
+            </div>
 
-            <!-- Правая колонка: действия -->
-            <aside class="actions-section">
-                <h3 class="section-title">⚡ Быстрые действия</h3>
-                <div class="actions-grid">
-                    <div class="action-card">
-                        <div class="action-icon">💰</div>
-                        <h4 class="action-title">Продать предметы</h4>
-                        <p class="action-description">Выставите свои предметы на продажу</p>
-                        <a href="#" class="btn btn-sell">Начать продажу</a>
+            <!-- Правая колонка: основной контент -->
+            <div class="profile-main-content">
+                <!-- Инвестиционный кошелек -->
+                <div class="wallet-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-wallet"></i>
+                            Инвестиционный кошелек
+                        </h3>
+                        <div class="card-actions">
+                            <button class="btn-icon" onclick="addSampleItems()">
+                                <i class="fas fa-plus"></i> Добавить
+                            </button>
+                            <a href="{% url 'steam_auth:comparison_price' %}" class="btn-icon success">
+                                <i class="fas fa-exchange-alt"></i> Сравнить
+                            </a>
+                        </div>
                     </div>
 
-                    <div class="action-card">
-                        <div class="action-icon">📊</div>
-                        <h4 class="action-title">Аналитика</h4>
-                        <p class="action-description">Проанализируйте стоимость вашего инвентаря</p>
-                        <a href="#" class="btn btn-view">Проанализировать</a>
+                    <div class="wallet-overview">
+                        <div class="wallet-stats">
+                            <div class="wallet-stats-label">Общая стоимость</div>
+                            <div class="wallet-stats-value" id="wallet-total">$0</div>
+                            <div class="wallet-stats-change value-positive" id="wallet-change">+0%</div>
+                        </div>
+                        <div class="wallet-stats">
+                            <div class="wallet-stats-label">Предметов в кошельке</div>
+                            <div class="wallet-stats-value" id="wallet-items-count">0</div>
+                        </div>
+                        <div class="wallet-stats">
+                            <div class="wallet-stats-label">Общая прибыль</div>
+                            <div class="wallet-stats-value value-positive" id="wallet-profit">$0</div>
+                        </div>
+                        <div class="wallet-stats">
+                            <div class="wallet-stats-label">Рост портфеля</div>
+                            <div class="wallet-stats-value" id="wallet-growth">0%</div>
+                        </div>
                     </div>
 
-                    <div class="action-card">
-                        <div class="action-icon">🔔</div>
-                        <h4 class="action-title">Уведомления</h4>
-                        <p class="action-description">Настройте оповещения о ценах</p>
-                        <a href="#" class="btn btn-view">Настроить</a>
-                    </div>
-
-                    <div class="action-card">
-                        <div class="action-icon">⭐</div>
-                        <h4 class="action-title">Избранное</h4>
-                        <p class="action-description">Список отслеживаемых предметов</p>
-                        <a href="#" class="btn btn-view">Перейти</a>
+                    <div class="wallet-items-container">
+                        <div class="wallet-items-grid" id="wallet-items-container">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">💰</div>
+                                <h3>Кошелек пуст</h3>
+                                <p>Добавьте предметы из раздела "Сравнение цен"</p>
+                                <p style="margin-top: 10px;">
+                                    <a href="{% url 'steam_auth:comparison_price' %}" class="btn btn-login" style="margin-top: 10px; padding: 8px 16px;">
+                                        <i class="fas fa-exchange-alt"></i> Перейти к сравнению цен
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </aside>
+
+                <!-- Инвентарь Steam -->
+                <div class="inventory-card">
+                    <div class="inventory-controls">
+                        <div class="game-tabs" id="gameTabs">
+                            <button class="game-tab active" data-appid="730">
+                                <i class="fas fa-crosshairs"></i> CS:GO / CS2
+                            </button>
+                            <button class="game-tab" data-appid="all">
+                                <i class="fas fa-gamepad"></i> Все игры
+                            </button>
+                            <button class="game-tab" data-appid="570">
+                                <i class="fas fa-swords"></i> Dota 2
+                            </button>
+                        </div>
+
+                        <button class="btn btn-login" onclick="loadCSGOInventory()" id="refresh-btn">
+                            <i class="fas fa-sync-alt"></i> Обновить инвентарь
+                        </button>
+                    </div>
+
+                    <div class="inventory-grid" id="inventory-container">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <p>Загрузка инвентаря CS:GO...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-                <!-- Инвентарь -->
-        <section class="inventory-section">
-            <h3 class="section-title">🎮 Инвентарь Steam</h3>
-
-            <div class="game-tabs" id="gameTabs">
-                <div class="game-tab active" data-game="all">Все игры</div>
-                <div class="game-tab" data-game="730">CS:GO / CS2</div>
-                <div class="game-tab" data-game="570">Dota 2</div>
-                <div class="game-tab" data-game="440">Team Fortress 2</div>
-                <div class="game-tab" data-game="252490">Rust</div>
-                <div class="game-tab" data-game="753">Steam</div>
-            </div>
-
-            <div class="items-grid" id="inventoryItems">
-                <!-- Предметы будут загружены через JavaScript -->
-                <div class="loading" id="loadingIndicator">
-                    <div class="loading-spinner"></div>
-                    <p>Загрузка инвентаря...</p>
-                </div>
-            </div>
-        </section>
 
         <!-- Футер -->
         <footer class="footer">
             <p>© 2024 CS Market Analytics. Все данные предоставлены Steam Community Market.</p>
             <p style="margin-top: 10px; font-size: 14px;">
-                Steam ID: <strong>{{ steam_data.steam_id }}</strong>
+                Steam ID: <strong>{{ steam_data.steam_id|default:"Не указан" }}</strong> |
+                Последнее обновление: <span id="last-update">{{ user_stats.last_update|default:"Сегодня" }}</span>
             </p>
-
-            {% if user.is_authenticated %}
-                <p style="margin-top: 10px; font-size: 14px;">
-                    Вы вошли как: <strong>{{ steam_data.persona_name|default:user.username }}</strong>
-                    | <a href="{% url 'home' %}" style="color: #4f7bff;">Главная</a>
-                    | <a href="{% url 'steam_auth:logout' %}" style="color: #ff4757;">Выйти</a>
-                </p>
-            {% endif %}
         </footer>
     </div>
+
     <script>
         // Токен CSRF для Django
         function getCookie(name) {
@@ -725,334 +1037,435 @@
             return cookieValue;
         }
 
-        const csrftoken = getCookie('csrftoken');
+        // Определяем базовый URL для страницы скина
+        {% if request %}
+            window.skinDetailBaseUrl = "{% url 'steam_auth:skin_detail' skin_name='{slug}' %}".replace('{slug}', '{slug}');
+        {% else %}
+            window.skinDetailBaseUrl = '/skin/{slug}/';
+        {% endif %}
 
-        // Функция для получения названия игры по appid
-        function getGameName(appid) {
-            const games = {
-                '730': 'Counter-Strike 2',
-                '570': 'Dota 2',
-                '440': 'Team Fortress 2',
-                '252490': 'Rust',
-                '753': 'Steam Карточки',
-                '578080': 'PUBG',
-                '218620': 'PAYDAY 2',
-                '550': 'Left 4 Dead 2',
-                '4000': 'Garry\'s Mod',
-                '232090': 'Killing Floor'
-            };
-            return games[appid] || `Игра ${appid}`;
+        // Функция для создания slug из имени
+        function createSlug(name) {
+            return name.toLowerCase()
+                .replace(/\|/g, '-')
+                .replace(/\s+/g, '-')
+                .replace(/[^\w-]/g, '')
+                .replace(/--+/g, '-')
+                .trim('-');
         }
 
-        // Функция для создания URL изображения Steam
-        function getSteamImageUrl(icon_url, icon_url_large) {
-            if (icon_url_large && icon_url_large !== '') {
-                return `https://steamcommunity-a.akamaihd.net/economy/image/${icon_url_large}`;
-            } else if (icon_url && icon_url !== '') {
-                return `https://steamcommunity-a.akamaihd.net/economy/image/${icon_url}`;
+        // Функция для открытия деталей скина
+        function openSkinDetails(skinName) {
+            const slug = createSlug(skinName);
+            // Проверяем, существует ли URL для деталей скина
+            if (typeof window.skinDetailBaseUrl !== 'undefined') {
+                window.location.href = window.skinDetailBaseUrl.replace('{slug}', slug);
+            } else {
+                // Если нет базового URL, используем относительный путь
+                window.location.href = `/skin/${slug}/`;
             }
-            return 'https://via.placeholder.com/64x64/2a2f3d/8a94a6?text=?';
         }
 
-        // Функция для отображения инвентаря
-        function renderInventory(items) {
-            const container = document.getElementById('inventoryItems');
+        // Функция для открытия деталей скина из инвентаря
+        function openSkinDetailsFromInventory(skinName) {
+            openSkinDetails(skinName);
+        }
 
-            // Очищаем контейнер
-            container.innerHTML = '';
+        // Обновляем renderWalletItems для добавления кнопки Детали
+        function renderWalletItems() {
+            const container = document.getElementById('wallet-items-container');
 
-            // Отображаем предметы или сообщение об пустом инвентаре
-            if (items && items.length > 0) {
-                // Сортируем предметы по названию
-                items.sort((a, b) => {
-                    const nameA = (a.name || a.market_hash_name || '').toLowerCase();
-                    const nameB = (b.name || b.market_hash_name || '').toLowerCase();
-                    return nameA.localeCompare(nameB);
-                });
+            if (walletItems.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💰</div>
+                        <h3>Кошелек пуст</h3>
+                        <p>Добавьте предметы из раздела "Сравнение цен"</p>
+                    </div>
+                `;
+                return;
+            }
 
-                items.forEach(item => {
-                    const itemCard = document.createElement('div');
-                    itemCard.className = 'inventory-item-card';
+            container.innerHTML = walletItems.map((item, index) => {
+                // Экранируем кавычки в имени для использования в onclick (как на странице сравнения)
+                const escapedName = (item.name || 'Без названия').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
-                    // Получаем данные предмета
-                    const itemName = item.name || item.market_hash_name || 'Без названия';
-                    const gameName = getGameName(item.appid);
-                    const imageUrl = getSteamImageUrl(item.icon_url, item.icon_url_large);
-                    const isTradable = item.tradable === true || item.tradable === 1;
-                    const isMarketable = item.marketable === true || item.marketable === 1;
-                    const amount = item.amount || 1;
-
-                    // Формируем URL для Steam маркета
-                    let marketUrl = '#';
-                    if (item.market_hash_name) {
-                        marketUrl = `https://steamcommunity.com/market/listings/${item.appid}/${encodeURIComponent(item.market_hash_name)}`;
-                    } else if (item.name) {
-                        marketUrl = `https://steamcommunity.com/market/search?q=${encodeURIComponent(item.name)}`;
-                    }
-
-                    itemCard.innerHTML = `
-                        <div class="item-header">
-                            <img src="${imageUrl}"
-                                 alt="${itemName}"
+                return `
+                    <div class="item-card">
+                        <div class="item-image-wrapper">
+                            <img src="${item.image || 'https://via.placeholder.com/200x120/2a2f3d/8a94a6?text=CS:GO'}"
+                                 alt="${item.name}"
                                  class="item-image"
-                                 onerror="this.src='https://via.placeholder.com/64x64/2a2f3d/8a94a6?text=?'"
-                                 loading="lazy">
-                            <div>
-                                <h4 class="item-name" title="${itemName}">
-                                    ${itemName.length > 30 ? itemName.substring(0, 27) + '...' : itemName}
-                                </h4>
-                                <div class="item-game">
-                                    ${gameName} • ${amount} шт.
+                                 onerror="this.src='https://via.placeholder.com/200x120/2a2f3d/8a94a6?text=CS:GO'">
+                        </div>
+                        <div class="item-details">
+                            <div class="item-name" title="${item.name}">
+                                ${item.name || 'Без названия'}
+                            </div>
+                            <div class="item-meta">
+                                <div class="item-type">${item.category || 'Инвестиция'}</div>
+                                <div class="item-change ${item.change >= 0 ? 'value-positive' : 'value-negative'}">
+                                    ${item.change >= 0 ? '▲' : '▼'} ${Math.abs(item.change)}%
                                 </div>
-                                <div class="item-game" style="font-size: 11px; margin-top: 2px;">
-                                    ${isTradable ? '🟢 Можно обменять' : '🔴 Нельзя обменять'} •
-                                    ${isMarketable ? '💰 Можно продать' : '🔒 Нельзя продать'}
-                                </div>
-                                ${item.type ? `<div class="item-game" style="font-size: 10px; margin-top: 2px; color: #8a94a6;">${item.type}</div>` : ''}
                             </div>
                         </div>
                         <div class="item-actions">
-                            <a href="${marketUrl}"
-                               target="_blank"
-                               class="btn-small btn-view"
-                               title="Посмотреть на Steam Market">
-                                📈 Маркет
-                            </a>
-                            <button class="btn-small btn-sell analyze-btn"
-                                    data-item='${JSON.stringify(item).replace(/'/g, "\\'")}'
-                                    title="Проанализировать стоимость">
-                                📊 Анализ
+                            <button class="action-btn btn-view" onclick="viewItemOnMarket(${index})" title="Посмотреть на маркете">
+                                <i class="fas fa-chart-line"></i>
+                            </button>
+                            <button class="action-btn btn-add" onclick="analyzeItem(${index})" title="Проанализировать">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                            <button class="action-btn" onclick="openSkinDetails('${escapedName}')"
+                                    title="Детальная аналитика" style="background: rgba(108, 92, 231, 0.1); color: #6c5ce7; border-color: #6c5ce7;">
+                                <i class="fas fa-search-plus"></i>
+                            </button>
+                            <button class="action-btn" onclick="removeFromWallet(${index})" title="Удалить" style="background: rgba(255, 71, 87, 0.1); color: #ff4757; border-color: #ff4757;">
+                                <i class="fas fa-trash"></i>
                             </button>
                         </div>
-                    `;
-
-                    container.appendChild(itemCard);
-                });
-
-                // Обновляем статистику в профиле
-                updateProfileStats(items);
-
-            } else {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <img src="https://cdn.jsdelivr.net/npm/twemoji@latest/assets/svg/1f6e0.svg" alt="Инструменты">
-                        <h3>Инвентарь пуст</h3>
-                        <p>В выбранной игре нет предметов в инвентаре</p>
-                        <p style="margin-top: 10px; font-size: 14px;">
-                            <a href="https://store.steampowered.com/" target="_blank" style="color: #4f7bff;">
-                                🛒 Перейти в Steam Store
-                            </a>
-                        </p>
                     </div>
                 `;
+            }).join('');
+
+            updateWalletStats();
+        }
+
+        // Обновляем renderInventory для добавления кнопки Детали
+        function renderInventory(items) {
+            const container = document.getElementById('inventory-container');
+
+            if (!items || items.length === 0) {
+                showEmptyInventory();
+                return;
+            }
+
+            container.innerHTML = items.map(item => {
+                // Экранируем кавычки в имени
+                const escapedName = (item.name || item.market_hash_name || 'Без названия')
+                    .replace(/'/g, "\\'")
+                    .replace(/"/g, '&quot;');
+
+                const displayName = item.name || item.market_hash_name || 'Без названия';
+                const shortName = displayName.length > 40 ? displayName.substring(0, 40) + '...' : displayName;
+
+                return `
+                    <div class="item-card">
+                        <div class="item-image-wrapper">
+                            <img src="${getImageUrl(item)}"
+                                 alt="${displayName}"
+                                 class="item-image"
+                                 onerror="this.src='https://via.placeholder.com/200x120/2a2f3d/8a94a6?text=CS:GO'">
+                            ${item.amount > 1 ? `<div class="item-quantity">×${item.amount}</div>` : ''}
+                        </div>
+                        <div class="item-details">
+                            <div class="item-name" title="${displayName}">
+                                ${shortName}
+                            </div>
+                            <div class="item-meta">
+                                <div class="item-type">${item.type || 'Предмет'}</div>
+                                <div class="item-tradable ${item.tradable ? 'value-positive' : 'value-negative'}">
+                                    ${item.tradable ? '🔄' : '🔒'}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="action-btn btn-view" onclick="openSteamMarket('${item.market_hash_name || item.name}')" title="Открыть на Steam Market">
+                                <i class="fas fa-external-link-alt"></i>
+                            </button>
+                            <button class="action-btn btn-add" onclick="addToWallet('${item.name || item.market_hash_name}', '${getImageUrl(item)}')"
+                                    title="Добавить в кошелек" ${!item.tradable ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button class="action-btn" onclick="openSkinDetailsFromInventory('${escapedName}')"
+                                    title="Детальная аналитика" style="background: rgba(108, 92, 231, 0.1); color: #6c5ce7; border-color: #6c5ce7;">
+                                <i class="fas fa-chart-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        const csrftoken = getCookie('csrftoken');
+        let walletItems = JSON.parse(localStorage.getItem('walletItems') || '[]');
+
+        // Функция для обновления статистики кошелька
+        function updateWalletStats() {
+            const totalItems = walletItems.length;
+            const totalValue = walletItems.reduce((sum, item) => sum + (item.price || 0), 0);
+            const totalProfit = walletItems.reduce((sum, item) => sum + (item.profit || 0), 0);
+
+            document.getElementById('wallet-items-count').textContent = totalItems;
+            document.getElementById('wallet-total').textContent = `$${totalValue.toFixed(2)}`;
+            document.getElementById('wallet-profit').textContent = `$${totalProfit.toFixed(2)}`;
+
+            if (totalValue > 0) {
+                const growth = (totalProfit / totalValue * 100).toFixed(1);
+                document.getElementById('wallet-growth').textContent = `${growth}%`;
+                document.getElementById('wallet-change').textContent = `+${growth}%`;
+                document.getElementById('wallet-growth').className = `wallet-stats-value ${growth >= 0 ? 'value-positive' : 'value-negative'}`;
+                document.getElementById('wallet-change').className = `wallet-stats-change ${growth >= 0 ? 'value-positive' : 'value-negative'}`;
             }
         }
 
-        // Функция для обновления статистики профиля
-        function updateProfileStats(items) {
-            // Обновляем количество предметов
-            const itemsCountElement = document.querySelector('.stat-card:nth-child(1) .stat-value');
-            if (itemsCountElement) {
-                itemsCountElement.textContent = items.length;
-            }
+        // Функция для добавления тестовых предметов
+        function addSampleItems() {
+            const sampleItems = [
+                {
+                    name: "Кейс «Киловатт»",
+                    price: 24.76,
+                    change: 2.5,
+                    profit: 1.25,
+                    image: "https://steamcommunity-a.akamaihd.net/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bj35VTqVBP4io_frnEVvqf_a6VoIfGSXz7Hlbwg57QwSS_mxhl15jiGyN37c3_GZw91W8BwRflK7EfKsa2sfw"
+                },
+                {
+                    name: "Gamma Case",
+                    price: 477.09,
+                    change: 1.8,
+                    profit: 8.50,
+                    image: "https://community.akamai.steamstatic.com/economy/image/i0CoZ81Ui0m-9KwlBY1L_18myuGuq1wfhWSaZgMttyVfPaERSR0Wqmu7LAocGJKz2lu_XsnXwtmkJjSU91dh8bj35VTqVBP4io_frHEVtvP5bPZrd6XECmOSxe0v4bRoTnnjwBkitWrRm4yoeX3GagMnCZZ2FPlK7EcEv22BnQ/62fx62f"
+                }
+            ];
 
-            // Считаем количество уникальных игр
-            const uniqueGames = [...new Set(items.map(item => item.appid))];
-            const gamesCountElement = document.querySelector('.stat-card:nth-child(2) .stat-value');
-            if (gamesCountElement) {
-                gamesCountElement.textContent = uniqueGames.length;
-            }
+            walletItems = [...walletItems, ...sampleItems];
+            localStorage.setItem('walletItems', JSON.stringify(walletItems));
+            renderWalletItems();
 
-            // Считаем количество торговых предметов
-            const tradableItems = items.filter(item => item.tradable === true || item.tradable === 1).length;
-            const tradesElement = document.querySelector('.stat-card:nth-child(3) .stat-value');
-            if (tradesElement) {
-                tradesElement.textContent = tradableItems;
+            // Показать уведомление
+            showNotification('Тестовые предметы добавлены в кошелек!', 'success');
+        }
+
+        // Функция для удаления предмета из кошелька
+        function removeFromWallet(index) {
+            if (confirm('Удалить этот предмет из кошелька?')) {
+                walletItems.splice(index, 1);
+                localStorage.setItem('walletItems', JSON.stringify(walletItems));
+                renderWalletItems();
+                showNotification('Предмет удален из кошелька', 'info');
             }
         }
 
-        // Функция для анализа предмета
-        function analyzeItem(itemData) {
-            const itemName = itemData.name || itemData.market_hash_name || 'Без названия';
-            const gameName = getGameName(itemData.appid);
-            const tradableStatus = itemData.tradable ? 'Можно обменять' : 'Нельзя обменять';
-            const marketableStatus = itemData.marketable ? 'Можно продать' : 'Нельзя продать';
+        // Функция для загрузки инвентаря CS:GO
+        async function loadCSGOInventory() {
+            const container = document.getElementById('inventory-container');
+            const refreshBtn = document.getElementById('refresh-btn');
 
-            alert(`📊 Анализ предмета:\n\n` +
-                  `🎮 Игра: ${gameName}\n` +
-                  `🏷️ Название: ${itemName}\n` +
-                  `📦 Количество: ${itemData.amount || 1}\n` +
-                  `🔄 Торговля: ${tradableStatus}\n` +
-                  `💰 Продажа: ${marketableStatus}\n` +
-                  `🎨 Тип: ${itemData.type || 'Не указан'}\n\n` +
-                  `Функция анализа цены будет добавлена позже.`);
-        }
-
-        // Функция для получения реального инвентаря Steam API
-        async function loadSteamInventory(gameId = 'all') {
             try {
-                const loadingIndicator = document.getElementById('loadingIndicator');
-                if (loadingIndicator) {
-                    loadingIndicator.innerHTML = `
+                container.innerHTML = `
+                    <div class="loading">
                         <div class="loading-spinner"></div>
-                        <p>Загрузка инвентаря из Steam...</p>
-                        <p style="font-size: 12px; margin-top: 10px; color: #8a94a6;">
-                            Это может занять несколько секунд
-                        </p>
-                    `;
+                        <p>Загрузка инвентаря CS:GO...</p>
+                    </div>
+                `;
+
+                refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+                refreshBtn.disabled = true;
+
+                // Используем Steam ID из сессии
+                const steamId = "{{ steam_data.steam_id }}";
+                if (!steamId || steamId === "Не указан") {
+                    throw new Error('Steam ID не найден. Пожалуйста, войдите заново.');
                 }
 
-                // Формируем URL запроса
-                const apiUrl = `/api/inventory/?appid=${gameId}`;
-
-                // Запрос к нашему API
-                const response = await fetch(apiUrl, {
-                    method: 'GET',
+                const response = await fetch(`/api/inventory/?appid=730&steam_id=${steamId}`, {
                     headers: {
-                        'Content-Type': 'application/json',
                         'X-CSRFToken': csrftoken
                     }
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP ошибка: ${response.status}`);
+                    throw new Error('Ошибка загрузки инвентаря');
                 }
 
                 const data = await response.json();
 
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-
                 if (data.items && data.items.length > 0) {
-                    // Отображаем инвентарь
                     renderInventory(data.items);
                 } else {
-                    showEmptyInventoryMessage();
+                    showEmptyInventory();
                 }
 
+                // Обновляем статистику профиля
+                updateProfileStats(data.items || []);
+
             } catch (error) {
-                showErrorMessage(error);
-            }
-        }
-
-        // Функция для отображения сообщения о пустом инвентаре
-        function showEmptyInventoryMessage() {
-            const container = document.getElementById('inventoryItems');
-            container.innerHTML = `
-                <div class="empty-state">
-                    <img src="https://cdn.jsdelivr.net/npm/twemoji@latest/assets/svg/1f9ca.svg" alt="Пусто">
-                    <h3>Инвентарь пуст</h3>
-                    <p>В вашем Steam инвентаре нет предметов для выбранной игры</p>
-                    <div style="margin-top: 20px; font-size: 14px; color: #8a94a6; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto;">
-                        <p><strong>Возможные причины:</strong></p>
-                        <ul style="margin: 10px 0; padding-left: 20px;">
-                            <li>В инвентаре нет предметов для выбранной игры</li>
-                            <li>Настройки приватности Steam ограничивают доступ к инвентарю</li>
-                            <li>Steam API временно недоступен</li>
-                        </ul>
-                    </div>
-                    <p style="font-size: 14px; margin-top: 10px;">
-                        <a href="https://store.steampowered.com/" target="_blank" style="color: #4f7bff;">
-                            Перейти в Steam Store
-                        </a>
-                    </p>
-                </div>
-            `;
-        }
-
-        // Функция для отображения ошибки
-        function showErrorMessage(error) {
-            const container = document.getElementById('inventoryItems');
-
-            let errorMessage = error.message;
-            if (error.message.includes('Failed to fetch')) {
-                errorMessage = 'Ошибка сети. Проверьте подключение к интернету.';
-            } else if (error.message.includes('Steam ID не найден')) {
-                errorMessage = 'Сессия устарела. Пожалуйста, войдите заново.';
-            }
-
-            container.innerHTML = `
-                <div class="empty-state">
-                    <img src="https://cdn.jsdelivr.net/npm/twemoji@latest/assets/svg/26a0.svg" alt="Ошибка">
-                    <h3>Ошибка загрузки</h3>
-                    <p>${errorMessage}</p>
-                    <div style="margin-top: 20px;">
-                        <button onclick="loadSteamInventory('all')" class="btn btn-login">
-                            🔄 Попробовать снова
+                console.error('Ошибка:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <h3>Ошибка загрузки</h3>
+                        <p>${error.message}</p>
+                        <button class="btn btn-login" onclick="loadCSGOInventory()" style="margin-top: 10px;">
+                            <i class="fas fa-redo"></i> Попробовать снова
                         </button>
                     </div>
+                `;
+            } finally {
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Обновить инвентарь';
+                refreshBtn.disabled = false;
+            }
+        }
+
+        // Функция для получения URL изображения
+        function getImageUrl(item) {
+            if (item.icon_url_large) {
+                return `https://steamcommunity-a.akamaihd.net/economy/image/${item.icon_url_large}`;
+            } else if (item.icon_url) {
+                return `https://steamcommunity-a.akamaihd.net/economy/image/${item.icon_url}`;
+            }
+            return 'https://via.placeholder.com/200x120/2a2f3d/8a94a6?text=CS:GO';
+        }
+
+        // Функция для отображения пустого инвентаря
+        function showEmptyInventory() {
+            const container = document.getElementById('inventory-container');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🎮</div>
+                    <h3>Инвентарь CS:GO пуст</h3>
+                    <p>В вашем Steam инвентаре нет предметов CS:GO/CS2</p>
                 </div>
             `;
+        }
+
+        // Функция для обновления статистики профиля
+        function updateProfileStats(items) {
+            const totalItems = items.length;
+            const tradableItems = items.filter(item => item.tradable).length;
+            const uniqueGames = new Set(items.map(item => item.appid)).size;
+
+            document.getElementById('total-items').textContent = totalItems;
+            document.getElementById('tradable-items').textContent = tradableItems;
+            document.getElementById('games-count').textContent = uniqueGames;
+
+            // Обновляем дату последнего обновления
+            document.getElementById('last-update').textContent = new Date().toLocaleDateString('ru-RU');
+        }
+
+        // Функция для добавления предмета в кошелек
+        function addToWallet(itemName, itemImage) {
+            const newItem = {
+                name: itemName,
+                price: Math.random() * 100 + 10,
+                change: (Math.random() * 20 - 10).toFixed(1),
+                profit: Math.random() * 10,
+                image: itemImage
+            };
+
+            walletItems.push(newItem);
+            localStorage.setItem('walletItems', JSON.stringify(walletItems));
+            renderWalletItems();
+
+            showNotification(`"${itemName}" добавлен в кошелек!`, 'success');
+        }
+
+        // Вспомогательные функции
+        function openSteamMarket(itemName) {
+            const encodedName = encodeURIComponent(itemName);
+            window.open(`https://steamcommunity.com/market/listings/730/${encodedName}`, '_blank');
+        }
+
+        function viewItemOnMarket(index) {
+            const item = walletItems[index];
+            if (item) {
+                openSteamMarket(item.name);
+            }
+        }
+
+        function analyzeItem(index) {
+            const item = walletItems[index];
+            if (item) {
+                alert(`Анализ предмета: ${item.name}\nЦена: $${item.price.toFixed(2)}\nИзменение: ${item.change}%\nПрибыль: $${item.profit.toFixed(2)}`);
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const colors = {
+                'success': '#00d09c',
+                'error': '#ff4757',
+                'info': '#4f7bff',
+                'warning': '#ffc107'
+            };
+
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colors[type] || colors.info};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out forwards';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
 
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
-            // Загружаем инвентарь по умолчанию (CS:GO)
-            loadSteamInventory('730');
+            // Загружаем инвентарь CS:GO
+            loadCSGOInventory();
 
-            // Назначаем обработчики для вкладок игр
-            const gameTabs = document.querySelectorAll('.game-tab');
-            gameTabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Убираем активный класс у всех вкладок
-                    gameTabs.forEach(t => t.classList.remove('active'));
+            // Отображаем кошелек
+            renderWalletItems();
 
-                    // Добавляем активный класс текущей вкладке
+            // Обработчики для вкладок игр
+            document.querySelectorAll('.game-tab').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.game-tab').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
 
-                    // Получаем ID игры из data-атрибута
-                    const gameId = this.getAttribute('data-game');
-
-                    // Загружаем инвентарь для выбранной игры
-                    if (gameId === 'all') {
-                        // Для "Все игры" загружаем CS:GO как основную
-                        loadSteamInventory('730');
+                    const appid = this.dataset.appid;
+                    if (appid === '730') {
+                        loadCSGOInventory();
                     } else {
-                        loadSteamInventory(gameId);
+                        showNotification('Загрузка инвентаря для этой игры будет доступна в следующем обновлении!', 'info');
                     }
                 });
             });
 
-            // Кнопка обновления инвентаря
-            const refreshBtn = document.createElement('button');
-            refreshBtn.innerHTML = '🔄 Обновить инвентарь';
-            refreshBtn.className = 'btn btn-login';
-            refreshBtn.style.marginLeft = '20px';
-            refreshBtn.style.padding = '8px 16px';
-            refreshBtn.style.fontSize = '14px';
-
-            refreshBtn.addEventListener('click', function() {
-                const activeTab = document.querySelector('.game-tab.active');
-                const gameId = activeTab ? activeTab.getAttribute('data-game') : '730';
-                loadSteamInventory(gameId === 'all' ? '730' : gameId);
-
-                // Анимация кнопки
-                this.innerHTML = '⏳ Обновление...';
-                this.disabled = true;
-                setTimeout(() => {
-                    this.innerHTML = '🔄 Обновить инвентарь';
-                    this.disabled = false;
-                }, 3000);
-            });
-
-            // Добавляем кнопку обновления рядом с заголовком
-            const inventoryTitle = document.querySelector('.inventory-section .section-title');
-            if (inventoryTitle) {
-                inventoryTitle.appendChild(refreshBtn);
-            }
-
-            // Обработчики для кнопок анализа (добавляем динамически)
-            document.addEventListener('click', function(event) {
-                if (event.target.classList.contains('analyze-btn')) {
-                    try {
-                        const itemData = JSON.parse(event.target.getAttribute('data-item'));
-                        analyzeItem(itemData);
-                    } catch (error) {
-                        console.error('Ошибка анализа предмета:', error);
+            // Добавляем стили для анимаций уведомлений
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
                     }
                 }
-            });
+                @keyframes slideOut {
+                    from {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
         });
     </script>
 </body>
