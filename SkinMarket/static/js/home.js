@@ -1,5 +1,134 @@
 // home.js
 
+// Функция для проверки авторизации
+function checkAuth(event, pageName) {
+    event.preventDefault();
+
+    const pageNames = {
+        'comparison_price': 'Сравнение цен',
+        'profile': 'Профиль',
+        'wallet': 'Инвестиционный кошелек',
+        'details': 'Детали скина'
+    };
+
+    const displayName = pageNames[pageName] || 'этой страницы';
+
+    showNotification(
+        `Для доступа к ${displayName} необходимо войти через Steam`,
+        'warning'
+    );
+
+    // Показать кнопку входа через секунду
+    setTimeout(() => {
+        showLoginButton();
+    }, 2000);
+
+    return false;
+}
+
+// Функция для показа кнопки входа
+function showLoginButton() {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: rgba(79, 123, 255, 0.95);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        z-index: 1001;
+        animation: slideIn 0.3s ease-out;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        font-weight: 500;
+        font-size: 14px;
+        max-width: 300px;
+    `;
+
+    // Используем window.loginUrl или относительный путь
+    const loginUrl = window.loginUrl || '/login/';
+
+    notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-lock"></i>
+            <span style="font-weight: 600;">Требуется авторизация</span>
+        </div>
+        <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 13px;">
+            Войдите через Steam для доступа ко всем функциям
+        </p>
+        <a href="${loginUrl}" class="btn" style="
+            background: linear-gradient(90deg, #171a2b, #1a1f2e);
+            color: white;
+            border: 1px solid #4f7bff;
+            padding: 10px 15px;
+            border-radius: 6px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        ">
+            <i class="fab fa-steam"></i>
+            Войти через Steam
+        </a>
+        <button onclick="this.parentElement.remove()" style="
+            background: transparent;
+            color: rgba(255,255,255,0.7);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            align-self: flex-end;
+        ">
+            Закрыть
+        </button>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Автоматически скрыть через 10 секунд
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideOut 0.3s ease-out forwards';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 10000);
+}
+
+// Функция для проверки всех защищенных ссылок
+function setupAuthCheck() {
+    // Проверяем, авторизован ли пользователь (из глобальной переменной)
+    const isAuthenticated = window.isAuthenticated || false;
+
+    if (!isAuthenticated) {
+        // Добавляем обработчики для всех ссылок на защищенные страницы
+        const protectedLinks = document.querySelectorAll('a[href*="comparison_price"], a[href*="profile"], .btn-details');
+
+        protectedLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && href.includes('comparison_price')) {
+                link.onclick = (e) => checkAuth(e, 'comparison_price');
+            } else if (href && href.includes('profile')) {
+                link.onclick = (e) => checkAuth(e, 'profile');
+            } else if (link.classList.contains('btn-details')) {
+                link.onclick = (e) => checkAuth(e, 'details');
+            }
+        });
+    }
+}
+
 // Функция для создания slug из имени
 function createSlug(name) {
     return name.toLowerCase()
@@ -31,8 +160,10 @@ function updateLiveStats() {
 }
 
 // Функция обновления статистики рынков
-function refreshMarketStats() {
+function refreshMarketStats(event) {
     const btn = event.target.closest('button');
+    if (!btn) return;
+
     const originalText = btn.innerHTML;
 
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Обновление...';
@@ -56,19 +187,23 @@ function refreshMarketStats() {
 
                 // Изменение
                 const changeElement = cells[3].querySelector('span');
-                const newChange = (Math.random() * 30 - 15).toFixed(2);
-                if (newChange >= 0) {
-                    changeElement.textContent = '▲ +' + newChange + '%';
-                    changeElement.className = 'positive';
-                } else {
-                    changeElement.textContent = '▼ ' + newChange + '%';
-                    changeElement.className = 'negative';
+                if (changeElement) {
+                    const newChange = (Math.random() * 30 - 15).toFixed(2);
+                    if (newChange >= 0) {
+                        changeElement.textContent = '▲ +' + newChange + '%';
+                        changeElement.className = 'positive';
+                    } else {
+                        changeElement.textContent = '▼ ' + newChange + '%';
+                        changeElement.className = 'negative';
+                    }
                 }
 
                 // Средняя цена
-                const price = parseFloat(cells[4].textContent.replace(/[^0-9.]/g, ''));
-                const priceChange = (Math.random() * 0.2 - 0.1);
-                cells[4].textContent = '$' + (price * (1 + priceChange)).toFixed(2);
+                if (cells[4]) {
+                    const price = parseFloat(cells[4].textContent.replace(/[^0-9.]/g, ''));
+                    const priceChange = (Math.random() * 0.2 - 0.1);
+                    cells[4].textContent = '$' + (price * (1 + priceChange)).toFixed(2);
+                }
             }
         });
 
@@ -82,10 +217,10 @@ function refreshMarketStats() {
 
 // Калькулятор прибыли
 function calculateProfit() {
-    const buyPrice = parseFloat(document.getElementById('buy-price').value) || 0;
-    const sellPrice = parseFloat(document.getElementById('sell-price').value) || 0;
-    const commission = parseFloat(document.getElementById('commission').value) || 0;
-    const quantity = parseInt(document.getElementById('quantity').value) || 1;
+    const buyPrice = parseFloat(document.getElementById('buy-price')?.value) || 0;
+    const sellPrice = parseFloat(document.getElementById('sell-price')?.value) || 0;
+    const commission = parseFloat(document.getElementById('commission')?.value) || 0;
+    const quantity = parseInt(document.getElementById('quantity')?.value) || 1;
 
     if (buyPrice <= 0 || sellPrice <= 0) {
         return;
@@ -175,7 +310,11 @@ function showNotification(message, type = 'info') {
 
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.3s ease-out forwards';
-        setTimeout(() => notification.remove(), 300);
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
     }, 3000);
 
     // Добавляем стили для анимации
@@ -326,14 +465,24 @@ function initializeHomePage() {
             }
         });
     }
+
+    // Настройка проверки авторизации
+    setupAuthCheck();
 }
 
 // Функция инициализации графиков
 function initializeCharts() {
     const canvas = document.getElementById('marketTrendChart');
-    if (!canvas) return;
+    if (!canvas) {
+        console.warn('Canvas элемент marketTrendChart не найден');
+        return;
+    }
 
     const ctx = canvas.getContext('2d');
+    if (!ctx) {
+        console.error('Не удалось получить контекст canvas');
+        return;
+    }
 
     // Данные для графика
     const labels = [];
@@ -343,122 +492,130 @@ function initializeCharts() {
         labels.push(date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }));
     }
 
-    window.marketChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Средняя цена предметов',
-                data: Array.from({length: 30}, () => Math.random() * 50 + 20),
-                borderColor: '#4f7bff',
-                backgroundColor: 'rgba(79, 123, 255, 0.1)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4
-            }, {
-                label: 'Объем торгов',
-                data: Array.from({length: 30}, () => Math.random() * 1000000 + 500000),
-                borderColor: '#00d09c',
-                backgroundColor: 'rgba(0, 208, 156, 0.1)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4,
-                yAxisID: 'y1'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false,
+    try {
+        window.marketChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Средняя цена предметов',
+                    data: Array.from({length: 30}, () => Math.random() * 50 + 20),
+                    borderColor: '#4f7bff',
+                    backgroundColor: 'rgba(79, 123, 255, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'Объем торгов',
+                    data: Array.from({length: 30}, () => Math.random() * 1000000 + 500000),
+                    borderColor: '#00d09c',
+                    backgroundColor: 'rgba(0, 208, 156, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    yAxisID: 'y1'
+                }]
             },
-            scales: {
-                y: {
-                    type: 'linear',
-                    display: true,
-                    position: 'left',
-                    title: {
-                        display: true,
-                        text: 'Цена ($)',
-                        color: '#8a94a6',
-                        font: { size: 12 }
-                    },
-                    grid: { color: 'rgba(42, 47, 61, 0.5)' },
-                    ticks: {
-                        color: '#8a94a6',
-                        font: { size: 11 }
-                    }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
                 },
-                y1: {
-                    type: 'linear',
-                    display: true,
-                    position: 'right',
-                    title: {
+                scales: {
+                    y: {
+                        type: 'linear',
                         display: true,
-                        text: 'Объем ($)',
-                        color: '#8a94a6',
-                        font: { size: 12 }
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Цена ($)',
+                            color: '#8a94a6',
+                            font: { size: 12 }
+                        },
+                        grid: { color: 'rgba(42, 47, 61, 0.5)' },
+                        ticks: {
+                            color: '#8a94a6',
+                            font: { size: 11 }
+                        }
                     },
-                    grid: { drawOnChartArea: false },
-                    ticks: {
-                        color: '#8a94a6',
-                        font: { size: 11 },
-                        callback: function(value) {
-                            if (value >= 1000000) {
-                                return '$' + (value / 1000000).toFixed(1) + 'M';
-                            } else if (value >= 1000) {
-                                return '$' + (value / 1000).toFixed(1) + 'K';
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Объем ($)',
+                            color: '#8a94a6',
+                            font: { size: 12 }
+                        },
+                        grid: { drawOnChartArea: false },
+                        ticks: {
+                            color: '#8a94a6',
+                            font: { size: 11 },
+                            callback: function(value) {
+                                if (value >= 1000000) {
+                                    return '$' + (value / 1000000).toFixed(1) + 'M';
+                                } else if (value >= 1000) {
+                                    return '$' + (value / 1000).toFixed(1) + 'K';
+                                }
+                                return '$' + value;
                             }
-                            return '$' + value;
+                        }
+                    },
+                    x: {
+                        grid: { color: 'rgba(42, 47, 61, 0.5)' },
+                        ticks: {
+                            color: '#8a94a6',
+                            font: { size: 11 },
+                            maxRotation: 0
                         }
                     }
                 },
-                x: {
-                    grid: { color: 'rgba(42, 47, 61, 0.5)' },
-                    ticks: {
-                        color: '#8a94a6',
-                        font: { size: 11 },
-                        maxRotation: 0
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        color: '#b0b7c3',
-                        font: { size: 11 }
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(26, 31, 46, 0.9)',
-                    titleColor: '#f0f0f0',
-                    bodyColor: '#b0b7c3',
-                    borderColor: '#4f7bff',
-                    borderWidth: 1,
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label.includes('Объем')) {
-                                if (context.parsed.y >= 1000000) {
-                                    return label + ': $' + (context.parsed.y / 1000000).toFixed(2) + 'M';
-                                } else if (context.parsed.y >= 1000) {
-                                    return label + ': $' + (context.parsed.y / 1000).toFixed(2) + 'K';
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#b0b7c3',
+                            font: { size: 11 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(26, 31, 46, 0.9)',
+                        titleColor: '#f0f0f0',
+                        bodyColor: '#b0b7c3',
+                        borderColor: '#4f7bff',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label.includes('Объем')) {
+                                    if (context.parsed.y >= 1000000) {
+                                        return label + ': $' + (context.parsed.y / 1000000).toFixed(2) + 'M';
+                                    } else if (context.parsed.y >= 1000) {
+                                        return label + ': $' + (context.parsed.y / 1000).toFixed(2) + 'K';
+                                    }
+                                    return label + ': $' + context.parsed.y;
                                 }
-                                return label + ': $' + context.parsed.y;
+                                return label + ': $' + context.parsed.y.toFixed(2);
                             }
-                            return label + ': $' + context.parsed.y.toFixed(2);
                         }
                     }
                 }
             }
-        }
-    });
+        });
+        console.log('График успешно инициализирован');
+    } catch (error) {
+        console.error('Ошибка при инициализации графика:', error);
+    }
 }
 
 // Функция обновления периода графика
 function updateChartPeriod(period) {
-    if (!window.marketChart) return;
+    if (!window.marketChart) {
+        console.warn('График не инициализирован');
+        return;
+    }
 
     let newLabels = [];
     let newData1 = [];
@@ -492,10 +649,14 @@ function updateChartPeriod(period) {
         }
     }
 
-    window.marketChart.data.labels = newLabels;
-    window.marketChart.data.datasets[0].data = newData1;
-    window.marketChart.data.datasets[1].data = newData2;
-    window.marketChart.update();
+    try {
+        window.marketChart.data.labels = newLabels;
+        window.marketChart.data.datasets[0].data = newData1;
+        window.marketChart.data.datasets[1].data = newData2;
+        window.marketChart.update();
+    } catch (error) {
+        console.error('Ошибка при обновлении графика:', error);
+    }
 }
 
 // Запуск при загрузке страницы
